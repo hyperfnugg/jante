@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -43,6 +42,7 @@ public class JettyServer {
         this.resourceConfig = resourceConfig;
         this.configuration = configuration;
         server = new Server(InetSocketAddress.createUnresolved(configuration.bindAddress, configuration.bindPort));
+//        servletContext = new ServletContextHandler(server, configuration.contextPath);
         servletContext = new ServletContextHandler(server, configuration.contextPath);
     }
 
@@ -80,27 +80,13 @@ public class JettyServer {
     @AllArgsConstructor
     @Builder
     public static class Configuration {
-        public final String apiPathSpec;
-        public final String bindAddress;
-        public final String contextPath;
+        @Builder.Default
+        public final String apiPathSpec = "/" + DEFAULT_API_PATH_SPEC + "/*";
+        @Builder.Default
+        public final String bindAddress = DEFAULT_BIND_ADDRESS;
+        @Builder.Default
+        public final String contextPath = "";
         public final int bindPort;
-
-
-        public static class ConfigurationBuilder {
-            String apiPathSpec = "/" + DEFAULT_API_PATH_SPEC + "/*";
-            String bindAddress = DEFAULT_BIND_ADDRESS;
-        }
-
-        public static ConfigurationBuilder defaultBuilder() {
-            return Configuration.builder();
-        }
-
-        public static ConfigurationBuilder fromProperties(PropertyProvider properties) {
-            properties.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
-            return defaultBuilder()
-                    .contextPath(properties.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
-                    .bindPort(Integer.parseInt(properties.get(CONFIG_KEY_SERVER_PORT)));
-        }
     }
 
 

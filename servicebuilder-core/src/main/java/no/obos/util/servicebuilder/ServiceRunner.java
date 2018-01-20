@@ -22,10 +22,12 @@ public class ServiceRunner {
     final PropertyProvider properties;
     @Wither(PRIVATE)
     final int port;
+    @Wither(PRIVATE)
+    final String contextPath;
 
 
     public static ServiceRunner serviceRunner(ServiceConfig serviceConfig) {
-        return new ServiceRunner(serviceConfig, propertyMap, 8080);
+        return new ServiceRunner(serviceConfig, propertyMap, 8080, null);
     }
 
     public ServiceRunner properties(PropertyProvider properties) {
@@ -47,31 +49,34 @@ public class ServiceRunner {
 
         int runtimePort = runtimeProperties.getWithFallback(CONFIG_KEY_SERVER_PORT, port);
 
+        String runtimeContextPath = properties.getWithFallback(CONFIG_KEY_SERVER_CONTEXT_PATH, contextPath);
+
         ServiceConfig runtimeConfig = initializeConfig(this.config, runtimeProperties);
 
         return this
                 .withConfig(runtimeConfig)
                 .withProperties(runtimeProperties)
-                .withPort(runtimePort);
+                .withPort(runtimePort)
+                .withContextPath(runtimeContextPath)
+                ;
     }
 
     private Runtime startServer() {
-        properties.failIfNotPresent(CONFIG_KEY_SERVER_CONTEXT_PATH);
-
         JerseyConfig jerseyConfig = new JerseyConfig(config.serviceDefinition);
 
         JettyServer.Configuration jettyConfig = JettyServer.Configuration.builder()
                 .bindPort(port)
-                .contextPath(properties.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
+                .contextPath(contextPath)
                 .build();
+
         JettyServer jettyServer = new JettyServer(jettyConfig, jerseyConfig);
 
         jerseyConfig
                 .addRegistrators(config.registrators)
                 .addBinders(config.binders);
-
         config.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
         config.addons.forEach(it -> it.addToJettyServer(jettyServer));
+
         jettyServer.start();
         return Runtime.builder()
                 .jerseyConfig(jerseyConfig)

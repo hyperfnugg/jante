@@ -55,7 +55,10 @@ public class SwaggerAddon implements Addon {
     public void addToJettyServer(JettyServer jettyServer) {
         ServletHolder apiDocServletHolder = new ServletHolder(new JerseyJaxrsConfig());
         apiDocServletHolder.setInitParameter("api.version", apiVersion.toString());
+
+
         String apiBasePath = Joiner.on('/')
+                .skipNulls()
                 .join(contextPath, apiPath);
         apiDocServletHolder.setInitParameter("swagger.api.basepath", apiBasePath);
         apiDocServletHolder.setInitOrder(2);

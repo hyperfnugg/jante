@@ -7,18 +7,20 @@ import org.junit.Test;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import static no.obos.util.servicebuilder.TestServiceRunnerJetty.testServiceRunnerJetty;
 import static no.obos.util.servicebuilder.addon.CorsFilterAddon.corsFilterAddon;
 import static no.obos.util.servicebuilder.cors.ResponseCorsFilter.ALLOW_CREDENTIALS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CorsFilterAddonTest extends AddonTestBase {
+public class CorsFilterAddonTest {
 
     @Test
     public void tolerant_options() {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(corsFilterAddon);
-        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
+        Response call = testServiceRunnerJetty(serviceConfig)
+                .property("server.port", "0")
                 .oneShot(target -> target
                         .path("api")
                         .path(TestService.PATH)

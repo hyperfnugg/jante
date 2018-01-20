@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
@@ -72,7 +73,10 @@ public class WebAppAddon implements Addon {
                 throw new IllegalArgumentException("Unrecognized URI scheme " + scheme + ". Allowed: classpath, file");
         }
         webAppContext.setResourceBase(warUrlString);
-        webAppContext.setContextPath(jettyServer.configuration.contextPath + pathSpec);
+        String contextPath = Joiner.on('/')
+                .skipNulls()
+                .join(jettyServer.configuration.contextPath, pathSpec);
+        webAppContext.setContextPath(contextPath);
         webAppContext.setParentLoaderPriority(true);
         jettyServer.addAppContext(webAppContext);
     }

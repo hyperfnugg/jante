@@ -6,20 +6,21 @@ import org.assertj.core.util.Files;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;
-
 import java.io.File;
 
+import static no.obos.util.servicebuilder.TestServiceRunnerJetty.testServiceRunnerJetty;
 import static no.obos.util.servicebuilder.addon.WebAppAddon.webAppAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class WebAppAddonTest extends AddonTestBase {
+public class WebAppAddonTest {
 
     @Test
     public void serves_from_classpath() {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(webAppAddon);
-        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
+        Response call = testServiceRunnerJetty(serviceConfig)
+                .property("server.port", "0")
                 .property("webapp.resource.url", "classpath:webapp")
                 .oneShot(target -> target
                         .path("webapp")
@@ -37,13 +38,14 @@ public class WebAppAddonTest extends AddonTestBase {
         String webAppDirLocation = "file:src/test/resources/webapp";
         File file = Files.currentFolder();
 
-        if(file.getName().equals("servicebuilder")) {
+        if (file.getName().equals("servicebuilder")) {
             webAppDirLocation = "file:servicebuilder-core-addons/src/test/resources/webapp";
         }
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(webAppAddon);
-        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
+        Response call = testServiceRunnerJetty(serviceConfig)
+                .property("server.port", "0")
                 .property("webapp.resource.url", webAppDirLocation)
                 .oneShot(target -> target
                         .path("webapp")
