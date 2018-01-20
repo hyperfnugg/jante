@@ -6,8 +6,6 @@ import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestService.Resource;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.exception.DependenceException;
-import no.obos.util.servicebuilder.interfaces.ApplicationTokenIdAddon;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -19,6 +17,8 @@ import java.time.LocalDate;
 
 import static no.obos.util.servicebuilder.TestService.Payload;
 import static no.obos.util.servicebuilder.TestService.instance;
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.addon.JerseyClientAddon.jerseyClientAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +35,7 @@ public class JerseyClientAddonTest {
         Payload actual =
                 nestedTestService.oneShot((clientconfig, uri) -> TestServiceRunner.defaults(
                         outerServiceConfig
-                                .addon(JerseyClientAddon.defaults(TestService.instance)
+                                .addon(jerseyClientAddon(TestService.instance)
                                         .clientConfigBase(clientconfig)
                                         .apiPrefix(null)
                                         .apptoken(false)
@@ -52,7 +52,7 @@ public class JerseyClientAddonTest {
     );
 
     ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple("outer", OuterResource.class))
-            .addon(ExceptionMapperAddon.defaults)
+            .addon(exceptionMapperAddon)
             .bind(OuterResourceImpl.class, OuterResource.class);
 
 
@@ -75,20 +75,5 @@ public class JerseyClientAddonTest {
         }
     }
 
-
-    @Test
-    public void dependent_on_tokenserviceaddon_if_apptoken_specified() {
-
-        ServiceConfig serviceConfig = TestService.config
-                .addon(JerseyClientAddon.defaults(TestService.instance));
-        try {
-            TestServiceRunner
-                    .defaults(serviceConfig)
-                    .oneShot(TestService.Resource.class, TestService.Resource::get);
-        } catch (DependenceException ex) {
-            assertThat(ex.independent).isEqualTo(ApplicationTokenIdAddon.class);
-            assertThat(ex.dependent).isEqualTo(JerseyClientAddon.class);
-        }
-    }
 }
 

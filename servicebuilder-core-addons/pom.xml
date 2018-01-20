@@ -5,7 +5,7 @@
     <parent>
         <groupId>no.obos.util</groupId>
         <artifactId>servicebuilder</artifactId>
-        <version>7.0.7</version>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -17,20 +17,6 @@
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-core-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>util-interfaces</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.metrics</groupId>
-            <artifactId>obos-metrics-servlet</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>

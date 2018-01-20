@@ -26,20 +26,18 @@ public class WebAppAddon implements Addon {
 
     @Wither(AccessLevel.PRIVATE)
     public final String pathSpec;
-    @Wither(AccessLevel.PRIVATE)
-    public final int sessionTimeoutSeconds;
+
     @Wither(AccessLevel.PRIVATE)
     public final URI resourceUri;
 
-    public static WebAppAddon defaults = new WebAppAddon("/webapp/*", 28800, null);
+    public static WebAppAddon webAppAddon = new WebAppAddon("/webapp/*", null);
 
 
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
-        properties.failIfNotPresent(CONFIG_KEY_RESOURCE_URL);
         try {
-            return this.resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL)));
+            return this.resourceUri(new URI(properties.requireWithFallback(CONFIG_KEY_RESOURCE_URL, resourceUri==null?null:resourceUri.toString())));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -80,7 +78,6 @@ public class WebAppAddon implements Addon {
         webAppContext.setResourceBase(warUrlString);
         webAppContext.setContextPath(jettyServer.configuration.contextPath + pathSpec);
         webAppContext.setParentLoaderPriority(true);
-        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeoutSeconds);
         jettyServer.addAppContext(webAppContext);
     }
 
@@ -88,9 +85,6 @@ public class WebAppAddon implements Addon {
         return withPathSpec(pathSpec);
     }
 
-    public WebAppAddon sessionTimeoutSeconds(int sessionTimeoutSeconds) {
-        return withSessionTimeoutSeconds(sessionTimeoutSeconds);
-    }
 
     public WebAppAddon resourceUri(URI resourceUri) {
         return withResourceUri(resourceUri);

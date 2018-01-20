@@ -4,38 +4,42 @@ import no.obos.util.servicebuilder.addon.*;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 
+import static no.obos.util.servicebuilder.addon.BasicDatasourceAddon.basicDatasourceAddon;
+import static no.obos.util.servicebuilder.addon.CorsFilterAddon.corsFilterAddon;
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
+import static no.obos.util.servicebuilder.addon.JdbiAddon.jdbiAddon;
+import static no.obos.util.servicebuilder.addon.JerseyClientAddon.jerseyClientAddon;
+import static no.obos.util.servicebuilder.addon.QueryRunnerAddon.queryRunnerAddon;
+import static no.obos.util.servicebuilder.addon.ServerLogAddon.serverLogAddon;
+import static no.obos.util.servicebuilder.addon.SwaggerAddon.swaggerAddon;
+import static no.obos.util.servicebuilder.addon.WebAppAddon.webAppAddon;
+
 public class Addons {
 
     public static CorsFilterAddon cors() {
-        return CorsFilterAddon.defaults;
+        return corsFilterAddon;
     }
 
     public static ExceptionMapperAddon exceptionMapper() {
-        return ExceptionMapperAddon.defaults;
+        return exceptionMapperAddon;
     }
 
     public static JerseyClientAddon jerseyClient(ServiceDefinition serviceDefinition) {
-        return JerseyClientAddon.defaults(serviceDefinition);
+        return jerseyClientAddon(serviceDefinition);
     }
 
-    public static MetricsAddon metrics() {
-        return MetricsAddon.defaults;
-    }
 
     public static SwaggerAddon swagger() {
-        return SwaggerAddon.defaults;
+        return swaggerAddon;
     }
 
     public static WebAppAddon webAppAddon() {
-        return WebAppAddon.defaults;
+        return webAppAddon;
     }
 
     public static ServerLogAddon serverLog() {
-        return ServerLogAddon.defaults;
-    }
-
-    public static RequireAppNameHeaderAddon requireAppNameHeader() {
-        return RequireAppNameHeaderAddon.defaults;
+        return serverLogAddon;
     }
 
 
@@ -46,7 +50,7 @@ public class Addons {
         </dependency>
      */
     public static BasicDatasourceAddon basicDatasource() {
-        return BasicDatasourceAddon.defaults;
+        return basicDatasourceAddon;
     }
 
     /*
@@ -56,7 +60,7 @@ public class Addons {
         </dependency>
      */
     public static H2InMemoryDatasourceAddon h2InMemoryDatasource() {
-        return H2InMemoryDatasourceAddon.defaults;
+        return h2InMemoryDatasourceAddon;
     }
 
     /*
@@ -66,7 +70,7 @@ public class Addons {
         </dependency>
      */
     public static JdbiAddon jdbi() {
-        return JdbiAddon.defaults;
+        return jdbiAddon;
     }
 
     /*
@@ -76,38 +80,9 @@ public class Addons {
         </dependency>
      */
     public static QueryRunnerAddon queryRunner() {
-        return QueryRunnerAddon.defaults;
+        return queryRunnerAddon;
     }
 
-    /*
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-iam</artifactId>
-        </dependency>
-     */
-    public static TokenServiceAddon tokenService() {
-        return TokenServiceAddon.defaults;
-    }
-
-    /*
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-iam</artifactId>
-        </dependency>
-     */
-    public static UserTokenFilterAddon userTokenFilter() {
-        return UserTokenFilterAddon.defaults;
-    }
-
-    /*
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-iam</artifactId>
-        </dependency>
-     */
-    public static ApplicationTokenFilterAddon applicationTokenFilter() {
-        return ApplicationTokenFilterAddon.defaults;
-    }
 
     /*
         <dependency>
@@ -126,7 +101,7 @@ public class Addons {
         </dependency>
     */
     public static ActiveMqSenderAddon activeMqSender() {
-        return ActiveMqSenderAddon.defaults;
+        return ActiveMqSenderAddon.activeMqSenderAddon;
     }
 
     /*
@@ -135,22 +110,37 @@ public class Addons {
         <artifactId>servicebuilder-elasticsearch</artifactId>
     </dependency>
     */
-    public static ElasticsearchAddonImpl elasticsearch() {
-        return ElasticsearchAddonImpl.defaults;
+    public static ElasticsearchClientAddon elasticsearch() {
+        return ElasticsearchClientAddon.elasticsearchClientAddon;
     }
 
-    public static ElasticsearchIndexAddon elasticsearchIndex(String indexName, Class<?> indexedType) {
-        return ElasticsearchIndexAddon.defaults(indexName, indexedType);
+    /*
+    <dependency>
+        <groupId>no.obos.util</groupId>
+        <artifactId>servicebuilder-elasticsearch-mock</artifactId>
+    </dependency>
+    */
+    public static ElasticsearchAddonMockImpl elasticsearchMock() {
+        return ElasticsearchAddonMockImpl.defaults;
     }
+    /*
+    <dependency>
+        <groupId>no.obos.util</groupId>
+        <artifactId>servicebuilder-elasticsearch</artifactId>
+    </dependency>
+    */
+    public static ElasticsearchIndexAddon elasticsearchIndex(String indexName, Class<?> indexedType) {
+        return ElasticsearchIndexAddon.elasticsearchIndexAddon(indexName, indexedType);
+    }
+
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
         return ServiceConfig.defaults(serviceDefinition)
-                .addon(SwaggerAddon.defaults)
-                .addon(CorsFilterAddon.defaults)
-                .addon(MetricsAddon.defaults)
-                .addon(ObosLogFilterAddon.defaults)
-                .addon(ExceptionMapperAddon.defaults)
-                .addon(ServerLogAddon.defaults)
+                .addon(swaggerAddon)
+                .addon(corsFilterAddon)
+                .addon(RequestIdAddon.requestIdAddon)
+                .addon(exceptionMapperAddon)
+                .addon(serverLogAddon)
                 ;
     }
 }

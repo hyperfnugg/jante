@@ -1,16 +1,15 @@
 package no.obos.util.servicebuilder.model;
 
-import java.util.List;
-
 public interface ServiceDefinition {
 
     String getName();
 
-    List<Class> getResources();
+    Version getVersion();
 
-    default JsonConfig getJsonConfig() {
-        return JsonConfig.standard;
+    Iterable<Class> getResources();
+
+    default SerializationSpec getSerializationSpec() {
+        return SerializationSpec.standard;
     }
-
 
 }

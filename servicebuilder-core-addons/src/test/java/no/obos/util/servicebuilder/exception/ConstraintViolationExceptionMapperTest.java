@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.exception;
 
-import no.obos.util.servicebuilder.model.NoLogging;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
+import no.obos.util.servicebuilder.model.NoValidationLogging;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,13 +40,14 @@ public class ConstraintViolationExceptionMapperTest {
     ConstraintDescriptor constraintDescriptor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ExceptionUtil exceptionUtil = new ExceptionUtil(null, null, null);
         exceptionMapper = new ConstraintViolationExceptionMapper(exceptionUtil);
         when(constraintViolation.getConstraintDescriptor()).thenReturn(constraintDescriptor);
         when(constraintViolation.getPropertyPath()).thenReturn(mock(Path.class));
         when(constraintViolation.getMessage()).thenReturn("Validation error message");
         when(constraintViolation.getInvalidValue()).thenReturn(VERDI_SOM_FEILER_VALIDERING);
+        //noinspection unchecked
         when(constraintViolationException.getConstraintViolations())
                 .thenReturn(Collections.singleton(constraintViolation));
     }
@@ -57,20 +58,20 @@ public class ConstraintViolationExceptionMapperTest {
 
         Response response = exceptionMapper.toResponse(constraintViolationException);
 
-        ProblemResponse problemResponse = (ProblemResponse) response.getEntity();
-        assertThat(problemResponse.detail).contains(VERDI_SOM_FEILER_VALIDERING);
+        HttpProblem httpProblem = (HttpProblem) response.getEntity();
+        assertThat(httpProblem.detail).contains(VERDI_SOM_FEILER_VALIDERING);
     }
 
     @Test
     public void skal_ikke_logge_verdi_som_feiler_validering() {
         Set payload = mock(Set.class);
-        when(payload.contains(NoLogging.class)).thenReturn(true);
+        when(payload.contains(NoValidationLogging.class)).thenReturn(true);
         when(constraintDescriptor.getPayload()).thenReturn(payload);
 
         Response response = exceptionMapper.toResponse(constraintViolationException);
 
-        ProblemResponse problemResponse = (ProblemResponse) response.getEntity();
-        assertThat(problemResponse.detail).doesNotContain(VERDI_SOM_FEILER_VALIDERING);
+        HttpProblem httpProblem = (HttpProblem) response.getEntity();
+        assertThat(httpProblem.detail).doesNotContain(VERDI_SOM_FEILER_VALIDERING);
     }
 
 }

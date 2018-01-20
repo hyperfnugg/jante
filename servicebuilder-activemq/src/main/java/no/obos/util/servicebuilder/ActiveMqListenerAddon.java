@@ -4,12 +4,12 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.mq.ActiveMqListener;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MessageQueueListener;
+import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.hk2.api.ServiceLocator;
 
@@ -68,10 +68,10 @@ public class ActiveMqListenerAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final Class<? extends MessageHandler> handler;
 
-    private static final ActiveMqListenerAddon defaults = new ActiveMqListenerAddon(null, null, null, null, null, null, null, 1, 60, null);
+    private static final ActiveMqListenerAddon activeMqListenerAddon = new ActiveMqListenerAddon(null, null, null, null, null, null, null, 1, 60, null);
 
     public static ActiveMqListenerAddon defaults(Class<? extends MessageHandler> messageHandler) {
-        return defaults.handler(messageHandler);
+        return activeMqListenerAddon.handler(messageHandler);
     }
 
     @Override
@@ -104,24 +104,14 @@ public class ActiveMqListenerAddon implements Addon {
     public Addon withProperties(PropertyProvider properties) {
         String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
 
-        properties.failIfNotPresent(
-                prefix + CONFIG_KEY_URL,
-                prefix + CONFIG_KEY_USER,
-                prefix + CONFIG_KEY_PASSWORD,
-                prefix + CONFIG_KEY_QUEUE_INPUT,
-                prefix + CONFIG_KEY_QUEUE_ERROR,
-                prefix + CONFIG_KEY_ENTRIES_MAX,
-                prefix + CONFIG_KEY_ENTRIES_GRACE
-        );
-
         return this
-                .url(properties.get(prefix + CONFIG_KEY_URL))
-                .user(properties.get(prefix + CONFIG_KEY_USER))
-                .password(properties.get(prefix + CONFIG_KEY_PASSWORD))
-                .queueInput(properties.get(prefix + CONFIG_KEY_QUEUE_INPUT))
-                .queueError(properties.get(prefix + CONFIG_KEY_QUEUE_ERROR))
-                .queueEntriesMax(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_MAX)))
-                .queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)))
+                .url(properties.requireWithFallback(prefix + CONFIG_KEY_URL, url))
+                .user(properties.requireWithFallback(prefix + CONFIG_KEY_USER, user))
+                .password(properties.requireWithFallback(prefix + CONFIG_KEY_PASSWORD, password))
+                .queueInput(properties.requireWithFallback(prefix + CONFIG_KEY_QUEUE_INPUT, queueInput))
+                .queueError(properties.requireWithFallback(prefix + CONFIG_KEY_QUEUE_ERROR, queueError))
+                .queueEntriesMax(Integer.parseInt(properties.requireWithFallback(prefix + CONFIG_KEY_ENTRIES_MAX, String.valueOf(queueEntriesMax))))
+                .queueEntriesGrace(Integer.parseInt(properties.requireWithFallback(prefix + CONFIG_KEY_ENTRIES_GRACE, String.valueOf(queueEntriesGrace))))
                 ;
     }
 

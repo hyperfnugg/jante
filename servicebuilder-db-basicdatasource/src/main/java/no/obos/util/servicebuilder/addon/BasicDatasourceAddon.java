@@ -5,12 +5,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
+import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -49,7 +49,7 @@ public class BasicDatasourceAddon implements DataSourceAddon {
     @Wither(AccessLevel.PRIVATE)
     public final DataSource dataSource;
 
-    public static BasicDatasourceAddon defaults = new BasicDatasourceAddon(null, null, null, null, null, null, true, null);
+    public static BasicDatasourceAddon basicDatasourceAddon = new BasicDatasourceAddon(null, null, null, null, null, "select 1", true, null);
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
@@ -66,13 +66,12 @@ public class BasicDatasourceAddon implements DataSourceAddon {
     @Override
     public Addon withProperties(PropertyProvider properties) {
         String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
-        properties.failIfNotPresent(prefix + CONFIG_KEY_DB_URL, prefix + CONFIG_KEY_DB_USERNAME, prefix + CONFIG_KEY_DB_PASSWORD, prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, prefix + CONFIG_KEY_DB_VALIDATION_QUERY);
         return this
-                .url(properties.get(prefix + CONFIG_KEY_DB_URL))
-                .username(properties.get(prefix + CONFIG_KEY_DB_USERNAME))
-                .password(properties.get(prefix + CONFIG_KEY_DB_PASSWORD))
-                .driverClassName(properties.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
-                .validationQuery(properties.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
+                .url(properties.requireWithFallback(prefix + CONFIG_KEY_DB_URL, url))
+                .username(properties.requireWithFallback(prefix + CONFIG_KEY_DB_USERNAME, username))
+                .password(properties.requireWithFallback(prefix + CONFIG_KEY_DB_PASSWORD, password))
+                .driverClassName(properties.requireWithFallback(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, driverClassName))
+                .validationQuery(properties.requireWithFallback(prefix + CONFIG_KEY_DB_VALIDATION_QUERY, validationQuery));
     }
 
 

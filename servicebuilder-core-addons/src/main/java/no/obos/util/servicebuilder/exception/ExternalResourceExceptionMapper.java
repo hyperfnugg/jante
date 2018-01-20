@@ -8,13 +8,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.model.LogLevel;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import no.obos.util.servicebuilder.util.FormatUtil;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -75,7 +76,7 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
         lines.add("Url: " + meta.url);
         List<String> filteredHeaders =
                 FormatUtil.stringMapAsIndentedLines(meta.headers, SKIP_REQUEST_HEADERS, INDENTATION);
-        if (! filteredHeaders.isEmpty()) {
+        if (!filteredHeaders.isEmpty()) {
             lines.add("Headers:");
             lines.addAll(filteredHeaders);
         }
@@ -87,11 +88,11 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
 
         lines.add("Status: " + meta.status);
 
-        if (meta.problemResponse != null) {
-            lines.add("ProblemResponse:");
-            List<String> problemResponseLines = problemResponseToLogLines(meta.problemResponse);
-            lines.addAll(FormatUtil.indentLines(problemResponseLines, INDENTATION));
-        } else if (! Strings.isNullOrEmpty(meta.response)) {
+        if (meta.httpProblem != null) {
+            lines.add("HttpProblem:");
+            List<String> httpProblemLines = httpProblemToLogLines(meta.httpProblem);
+            lines.addAll(FormatUtil.indentLines(httpProblemLines, INDENTATION));
+        } else if (!Strings.isNullOrEmpty(meta.response)) {
             lines.add("Body:");
             List<String> bodyLines = Splitter.on("\n").splitToList(meta.response);
             lines.addAll(FormatUtil.indentLines(bodyLines, INDENTATION));
@@ -100,24 +101,25 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
         }
 
         List<String> headers = FormatUtil.stringMapAsIndentedLines(meta.headers, SKIP_RESPONSE_HEADERS, INDENTATION);
-        if (! headers.isEmpty()) {
+        if (!headers.isEmpty()) {
             lines.add("Headers:");
             lines.addAll(headers);
         }
         return lines;
     }
 
-    private List<String> problemResponseToLogLines(ProblemResponse problem) {
+    private List<String> httpProblemToLogLines(HttpProblem problem) {
         List<String> lines = Lists.newArrayList();
 
-        if (Strings.isNullOrEmpty(problem.type) && ! "about:blank".equals(problem.type)) {
+        if (Strings.isNullOrEmpty(problem.type) && !"about:blank".equals(problem.type)) {
             lines.add("Type: " + problem.type);
         }
         lines.add("Detail: " + problem.detail);
         lines.add("Title: " + problem.title);
-        if (problem.context != null && ! problem.context.isEmpty()) {
+        Map<String, String> context = problem.getContext();
+        if (context != null && !context.isEmpty()) {
             lines.add("Context: " + problem.title);
-            lines.addAll(FormatUtil.stringMapAsIndentedLines(problem.context, Sets.newHashSet(), INDENTATION));
+            lines.addAll(FormatUtil.stringMapAsIndentedLines(context, Sets.newHashSet(), INDENTATION));
         }
         return lines;
     }

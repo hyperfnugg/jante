@@ -1,9 +1,9 @@
 package no.obos.util.servicebuilder.mq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnection;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.MDC;
 
 import javax.jms.JMSException;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
+import static no.obos.util.servicebuilder.model.Constants.X_REQUEST_ID;
 
 
 @Slf4j
@@ -78,11 +78,11 @@ public class ActiveMqListener implements MessageQueueListener {
         String requestId = UUID.randomUUID().toString();
         try {
             text = textMessage.getText();
-            if (StringUtils.isNotEmpty(message.getJMSCorrelationID())) {
+            if (! Strings.isNullOrEmpty(message.getJMSCorrelationID())) {
                 requestId = message.getJMSCorrelationID();
             }
 
-            MDC.put(X_OBOS_REQUEST_ID, requestId);
+            MDC.put(X_REQUEST_ID, requestId);
 
             log.info("Received message '{}'", text);
 
@@ -100,7 +100,7 @@ public class ActiveMqListener implements MessageQueueListener {
                 log.error("Failed to create error message", jmse);
             }
         } finally {
-            MDC.remove(X_OBOS_REQUEST_ID);
+            MDC.remove(X_REQUEST_ID);
         }
     }
 

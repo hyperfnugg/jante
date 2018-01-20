@@ -4,11 +4,11 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.mq.ActiveMqSender;
 import no.obos.util.servicebuilder.mq.MessageQueueSender;
+import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveMqSenderAddon implements Addon {
@@ -39,7 +39,7 @@ public class ActiveMqSenderAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final boolean registerHealthcheck;
 
-    public static ActiveMqSenderAddon defaults = new ActiveMqSenderAddon(null, null, null, null, null, null, 60, true);
+    public static ActiveMqSenderAddon activeMqSenderAddon = new ActiveMqSenderAddon(null, null, null, null, null, null, 60, true);
 
 
     @Override
@@ -80,11 +80,11 @@ public class ActiveMqSenderAddon implements Addon {
         );
 
         return this
-                .url(properties.get(prefix + CONFIG_KEY_URL))
-                .user(properties.get(prefix + CONFIG_KEY_USER))
-                .password(properties.get(prefix + CONFIG_KEY_PASSWORD))
-                .queue(properties.get(prefix + CONFIG_KEY_QUEUE))
-                .queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)))
+                .url(properties.requireWithFallback(prefix + CONFIG_KEY_URL, url))
+                .user(properties.requireWithFallback(prefix + CONFIG_KEY_USER, user))
+                .password(properties.requireWithFallback(prefix + CONFIG_KEY_PASSWORD, password))
+                .queue(properties.requireWithFallback(prefix + CONFIG_KEY_QUEUE, queue))
+                .queueEntriesGrace(Integer.parseInt(properties.requireWithFallback(prefix + CONFIG_KEY_ENTRIES_GRACE, String.valueOf(queueEntriesGrace))))
                 ;
     }
 
