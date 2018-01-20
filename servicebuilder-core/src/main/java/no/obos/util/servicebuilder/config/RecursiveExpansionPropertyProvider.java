@@ -29,17 +29,6 @@ public abstract class RecursiveExpansionPropertyProvider implements PropertyProv
                 : fallback;
     }
 
-    @Override
-    public String requireWithFallback(String key, String fallback) {
-        String prop = get(key);
-        if (!isNullOrEmpty(prop)) {
-            return prop;
-        } else if (!isNullOrEmpty(fallback)) {
-            return fallback;
-        } else {
-            throw new RuntimeException("missing property: " + key);
-        }
-    }
 
     private String getWithExpandedPropertiesRecursor(RecursiveExpansionPropertyProvider propertyProvider, String key, List<String> alreadyExpanded) {
         if (alreadyExpanded.contains(key)) {

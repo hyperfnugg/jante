@@ -17,7 +17,8 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 
-@SuppressWarnings("squid:S00112")
+import static no.obos.util.servicebuilder.util.ExceptionUtil.wrapCheckedExceptionsVoid;
+
 public class JettyServer {
     public static final String CONFIG_KEY_SERVER_CONTEXT_PATH = "server.contextPath";
     public static final String CONFIG_KEY_SERVER_PORT = "server.port";
@@ -52,35 +53,17 @@ public class JettyServer {
         contexts.setHandlers(handlers);
 
         server.setHandler(contexts);
-        try {
-            server.start();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        wrapCheckedExceptionsVoid(server::start);
         return this;
     }
 
+
     public void join() {
-        try {
-            server.join();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        wrapCheckedExceptionsVoid(server::join);
     }
 
     public void stop() {
-        try {
-            server.stop();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-
+        wrapCheckedExceptionsVoid(server::stop);
     }
 
     public static Configurator defaults() {

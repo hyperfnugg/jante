@@ -25,7 +25,7 @@ public class SwaggerAddonTest extends AddonTestBase {
                         .get()
                 );
         //language=JSON
-        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"\"},\"basePath\":\"ape\",\"paths\":{\"/path\":{\"get\":{\"operationId\":\"get\",\"produces\":[\"application/json\"],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"successful operation\",\"schema\":{\"$ref\":\"#/definitions/Payload\"},\"headers\":{}}}}}},\"definitions\":{\"Payload\":{\"type\":\"object\",\"properties\":{\"string\":{\"type\":\"string\"},\"date\":{\"type\":\"string\",\"format\":\"date\"}}}}}";
+        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0.0\",\"title\":\"\"},\"basePath\":\"ape\",\"paths\":{\"/path\":{\"get\":{\"operationId\":\"get\",\"produces\":[\"application/json\"],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"successful operation\",\"schema\":{\"$ref\":\"#/definitions/Payload\"},\"headers\":{}}}}}},\"definitions\":{\"Payload\":{\"type\":\"object\",\"properties\":{\"string\":{\"type\":\"string\"},\"date\":{\"type\":\"string\",\"format\":\"date\"}}}}}";
         assertThat(call.readEntity(String.class)).isEqualToIgnoringWhitespace(expected);
     }
 

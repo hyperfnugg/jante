@@ -58,7 +58,7 @@ public class PropertyMap extends RecursiveExpansionPropertyProvider {
     }
 
 
-    public static PropertyMap fromJvmArgs() {
+    public static PropertyMap propertyFileFromJvmArgs() {
         if (isNullOrEmpty(System.getProperty(Constants.APPCONFIG_KEY))) {
             throw new IllegalStateException("Set property file in argument " + Constants.APPCONFIG_KEY);
         }

@@ -10,6 +10,7 @@ import no.obos.util.template.resources.TemplateResourceImpl;
 
 import static no.obos.util.servicebuilder.ServiceRunner.serviceRunner;
 import static no.obos.util.servicebuilder.addon.WebAppAddon.webAppAddon;
+import static no.obos.util.servicebuilder.config.PropertyMap.propertyFileFromJvmArgs;
 
 public class Main {
     public final static ServiceConfig commonConfig = Addons.standardAddons(TemplateDefinition.instance)
@@ -28,7 +29,9 @@ public class Main {
 
 
     public static void main(String[] args) {
-        serviceRunner(mainConfig).start().join();
+        serviceRunner(mainConfig)
+                .properties(propertyFileFromJvmArgs())
+                .start().join();
     }
 
 }

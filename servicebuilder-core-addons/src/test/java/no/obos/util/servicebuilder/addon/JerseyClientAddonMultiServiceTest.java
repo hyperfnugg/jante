@@ -35,6 +35,7 @@ public class JerseyClientAddonMultiServiceTest {
 
             testServiceRunner(
                     outerConfig
+                            .addon(exceptionMapperAddon)
                             .addon(jerseyClientAddon(stubServiceDefinition(NESTED_NAME1, Nested1.class))
                                     .clientConfigBase(nestedRuntime1.clientConfig)
                                     .apptoken(false)

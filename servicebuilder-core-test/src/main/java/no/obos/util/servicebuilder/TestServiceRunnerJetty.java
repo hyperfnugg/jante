@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.function.Function.identity;
+import static no.obos.util.servicebuilder.ServiceRunner.serviceRunner;
 import static no.obos.util.servicebuilder.client.ClientGenerator.clientGenerator;
 import static no.obos.util.servicebuilder.client.StubGenerator.stubGenerator;
 import static no.obos.util.servicebuilder.client.TargetGenerator.targetGenerator;
@@ -52,19 +53,19 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
 
     @AllArgsConstructor
     public static class Runtime implements TestRuntime {
-        public final ServiceRunner serviceRunner;
+        public final ServiceRunner.Runtime runnerRuntime;
         public final URI uri;
         public final StubGenerator stubGenerator;
         public final ClientGenerator clientGenerator;
         public final TargetGenerator targetGenerator;
 
         public void stop() {
-            serviceRunner.stop();
-            serviceRunner.join();
+            runnerRuntime.stop();
+            runnerRuntime.join();
         }
 
         public void join() {
-            serviceRunner.join();
+            runnerRuntime.join();
         }
 
         @Override
@@ -89,7 +90,7 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
 
         @Override
         public ResourceConfig getResourceConfig() {
-            return serviceRunner.jerseyConfig.resourceConfig;
+            return runnerRuntime.jerseyConfig.resourceConfig;
         }
     }
 
@@ -98,22 +99,21 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
 
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-        ServiceConfig serviceConfigwithProps = serviceConfig.addPropertiesAndApplyToBindings(propertyMap);
-        ServiceRunner serviceRunner = new ServiceRunner(serviceConfigwithProps, propertyMap);
-        ServiceRunner runningServiceRunner = serviceRunner.start();
+        ServiceRunner serviceRunner = serviceRunner(serviceConfig).properties(propertyMap);
+        ServiceRunner.Runtime runnerRuntime = serviceRunner.start();
 
-        URI uri = runningServiceRunner.jettyServer.server.getURI();
+        URI uri = runnerRuntime.jettyServer.server.getURI();
         uri = UriBuilder.fromUri(uri).host("localhost").build();
 
         ClientGenerator clientGenerator = clientConfigurator.apply(
-                clientGenerator(serviceConfigwithProps.serviceDefinition)
+                clientGenerator(runnerRuntime.runner.config.serviceDefinition)
         );
         Client client = clientGenerator.generate();
         StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, UriBuilder.fromUri(uri).build()));
 
         TargetGenerator targetGenerator = targetConfigurator.apply(targetGenerator(client, uri));
 
-        return new Runtime(runningServiceRunner, uri, stubGenerator, clientGenerator, targetGenerator);
+        return new Runtime(runnerRuntime, uri, stubGenerator, clientGenerator, targetGenerator);
     }
 
 
