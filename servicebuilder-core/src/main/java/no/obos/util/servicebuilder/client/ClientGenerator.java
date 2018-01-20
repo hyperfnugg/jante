@@ -9,6 +9,7 @@ import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.model.SerializationSpec;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.model.Version;
 import no.obos.util.servicebuilder.util.JsonUtil;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
@@ -21,25 +22,28 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientGenerator {
     public static final String SERVICE_DEFINITION_INJECTION = "servicedefinition";
+    public static final String TARGET_NAME_INJECTION = "targetName";
     @Wither(AccessLevel.PRIVATE)
     public final ClientConfig clientConfigBase;
     @Wither(AccessLevel.PRIVATE)
-    public final ServiceDefinition serviceDefinition;
+    public final String targetName;
+    @Wither(AccessLevel.PRIVATE)
+    public final Version targetVersion;
+    @Wither(AccessLevel.PRIVATE)
+    public final SerializationSpec serializationSpec;
     @Wither(AccessLevel.PRIVATE)
     public final String clientAppName;
 
-    public static ClientGenerator clientGenerator(ServiceDefinition serviceDefinition) {
-        return new ClientGenerator(null, serviceDefinition, null);
-    }
+    public static ClientGenerator clientGenerator = new ClientGenerator(null, null, null, SerializationSpec.standard, null);
 
     public Client generate() {
         ClientConfig clientConfig = clientConfigBase != null
                 ? new ClientConfig().loadFrom(clientConfigBase)
                 : new ClientConfig();
         final List<JerseyConfig.Binder> binders = new ArrayList<>();
-        binders.add(binder -> binder.bind(serviceDefinition).to(ServiceDefinition.class).named(SERVICE_DEFINITION_INJECTION));
+        binders.add(binder -> binder.bind(targetName).to(String.class).named(TARGET_NAME_INJECTION));
+        binders.add(binder -> binder.bind(targetVersion).to(Version.class));
 
-        SerializationSpec serializationSpec = serviceDefinition.getSerializationSpec();
         ObjectMapper mapper = JsonUtil.createObjectMapper(serializationSpec);
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
@@ -67,8 +71,23 @@ public class ClientGenerator {
         return withClientAppName(clientAppName);
     }
 
+    public ClientGenerator targetName(String targetName) {
+        return withTargetName(targetName);
+    }
+
+    public ClientGenerator targetVersion(Version targetVersion) {
+        return withTargetVersion(targetVersion);
+    }
+
+    public ClientGenerator serializationSpec(SerializationSpec serializationSpec) {
+        return withSerializationSpec(serializationSpec);
+    }
+
     public ClientGenerator serviceDefinition(ServiceDefinition serviceDefinition) {
-        return this.withServiceDefinition(serviceDefinition);
+        return this.targetName(serviceDefinition.getName())
+                .targetVersion(serviceDefinition.getVersion())
+                .serializationSpec(serviceDefinition.getSerializationSpec())
+                ;
     }
 
 }

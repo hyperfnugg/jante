@@ -8,7 +8,6 @@ import no.obos.util.servicebuilder.exception.ExternalResourceException.HttpRespo
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
 import no.obos.util.servicebuilder.exception.ExternalResourceNotFoundException;
 import no.obos.util.servicebuilder.model.HttpProblem;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.model.Version;
 import no.obos.util.servicebuilder.util.FormatUtil;
 import org.jvnet.hk2.annotations.Optional;
@@ -30,27 +29,25 @@ import java.util.stream.Collectors;
 @Priority(Priorities.AUTHENTICATION)
 public class ClientErrorResponseFilter implements ClientResponseFilter {
     final ObjectMapper mapper;
-    final ServiceDefinition serviceDefinition;
+    final String targetName;
+    final Version targetVersion;
 
     @Inject
     public ClientErrorResponseFilter(
             ObjectMapper mapper,
-            @Named(ClientGenerator.SERVICE_DEFINITION_INJECTION) @Optional ServiceDefinition serviceDefinition)
-    {
+            @Named(ClientGenerator.TARGET_NAME_INJECTION) @Optional String targetName,
+            @Optional Version targetVersion) {
         this.mapper = mapper;
-        this.serviceDefinition = serviceDefinition;
+        this.targetName = targetName;
+        this.targetVersion = targetVersion;
     }
-
 
 
     @Override
     public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
-            throws IOException
-    {
+            throws IOException {
         // for non-200 response, deal with the custom error messages
-        if (! Response.Status.Family.SUCCESSFUL.equals(responseContext.getStatusInfo().getFamily())) {
-            String targetName = serviceDefinition == null ? null : serviceDefinition.getName();
-            Version targetVersion = serviceDefinition == null ? null : serviceDefinition.getVersion();
+        if (!Response.Status.Family.SUCCESSFUL.equals(responseContext.getStatusInfo().getFamily())) {
             MetaData metaData = MetaData.builder()
                     .httpRequestMetaData(getRequestMetaData(requestContext))
                     .httpResponseMetaData(getResponseMetaData(responseContext))

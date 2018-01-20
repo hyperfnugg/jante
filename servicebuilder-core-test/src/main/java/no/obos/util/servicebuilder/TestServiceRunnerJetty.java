@@ -105,15 +105,15 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
         URI uri = runnerRuntime.jettyServer.server.getURI();
         uri = UriBuilder.fromUri(uri).host("localhost").build();
 
-        ClientGenerator clientGenerator = clientConfigurator.apply(
-                clientGenerator(runnerRuntime.runner.config.serviceDefinition)
+        ClientGenerator generator = clientConfigurator.apply(
+                clientGenerator.serviceDefinition(runnerRuntime.runner.config.serviceDefinition)
         );
-        Client client = clientGenerator.generate();
+        Client client = generator.generate();
         StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, UriBuilder.fromUri(uri).build()));
 
         TargetGenerator targetGenerator = targetConfigurator.apply(targetGenerator(client, uri));
 
-        return new Runtime(runnerRuntime, uri, stubGenerator, clientGenerator, targetGenerator);
+        return new Runtime(runnerRuntime, uri, stubGenerator, generator, targetGenerator);
     }
 
 

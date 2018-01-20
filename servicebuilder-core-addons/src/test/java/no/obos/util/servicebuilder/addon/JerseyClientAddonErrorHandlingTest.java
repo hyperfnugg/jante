@@ -80,7 +80,7 @@ public class JerseyClientAddonErrorHandlingTest {
 
     @Test(expected = ProcessingException.class)
     public void no_custom_error_handling_when_call_fails_before_network() {
-        Client client = clientGenerator(testService).generate();
+        Client client = clientGenerator.serviceDefinition(testService).generate();
         //given
         Resource resource = stubGenerator(client, URI.create("http://will.fail.badly")).generateClient(Resource.class);
         //when

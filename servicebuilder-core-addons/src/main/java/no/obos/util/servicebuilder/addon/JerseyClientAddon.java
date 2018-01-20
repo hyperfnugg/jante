@@ -65,7 +65,7 @@ public class JerseyClientAddon implements Addon {
         String clientAppName = serviceConfig.serviceDefinition.getName()
                 + ":"
                 + ApiVersionUtil.getApiVersion(serviceConfig.serviceDefinition.getClass());
-        Client client = clientGenerator(serviceDefinition)
+        Client client = clientGenerator.serviceDefinition(serviceDefinition)
                 .clientConfigBase(clientConfigBase)
                 .clientAppName(clientAppName)
                 .generate();

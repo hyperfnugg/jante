@@ -133,11 +133,11 @@ public class TestServiceRunner implements TestServiceRunnerBase {
         TestContainer testContainer = new InMemoryTestContainerFactory().create(uri, context);
         testContainer.start();
         ClientConfig clientConfig = testContainer.getClientConfig();
-        ClientGenerator clientGenerator = clientConfigurator.apply(
-                clientGenerator(serviceConfigWithContext.serviceDefinition)
+        ClientGenerator generator = clientConfigurator.apply(
+                clientGenerator.serviceDefinition(serviceConfigWithContext.serviceDefinition)
                         .clientConfigBase(clientConfig)
         );
-        Client client = clientGenerator.generate();
+        Client client = generator.generate();
 
         Runtime runtime = new Runtime(serviceConfigWithContext, jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator);
         return withServiceConfig(serviceConfigWithContext).withRuntime(runtime);
