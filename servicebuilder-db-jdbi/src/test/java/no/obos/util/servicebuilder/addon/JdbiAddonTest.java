@@ -2,8 +2,6 @@ package no.obos.util.servicebuilder.addon;
 
 import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.ServiceDefinitionUtil;
-import no.obos.util.servicebuilder.TestServiceRunner;
 import org.junit.Test;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -15,6 +13,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
 import static no.obos.util.servicebuilder.addon.JdbiAddon.jdbiAddon;
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JdbiAddonTest {
 
 
-    ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
+    ServiceConfig serviceConfig = serviceConfig(stubServiceDefinition(Api.class))
             .addon(exceptionMapperAddon)
             .addon(h2InMemoryDatasourceAddon.name("Banan")
                     .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
@@ -38,7 +39,7 @@ public class JdbiAddonTest {
     @Test
     public void runsWithJdbi() {
         List<Integer> expected = Lists.newArrayList(101, 202);
-        List<Integer> actual = TestServiceRunner.defaults(serviceConfig)
+        List<Integer> actual = testServiceRunner(serviceConfig)
                 .oneShot(Api.class, Api::get);
         assertThat(actual).isEqualTo(expected);
     }
@@ -46,7 +47,7 @@ public class JdbiAddonTest {
     @Test
     public void testChainExample() {
         List<Integer> expected = Lists.newArrayList(101, 202);
-        TestServiceRunner.defaults(serviceConfig)
+        testServiceRunner(serviceConfig)
                 .chain()
                 .call(Api.class, Api::get)
                 .addonNamed(addon_name, JdbiAddon.class, it -> {

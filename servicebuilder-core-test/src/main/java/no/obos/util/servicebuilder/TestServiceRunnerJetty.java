@@ -22,6 +22,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.function.Function.identity;
+import static no.obos.util.servicebuilder.client.ClientGenerator.clientGenerator;
+import static no.obos.util.servicebuilder.client.StubGenerator.stubGenerator;
+import static no.obos.util.servicebuilder.client.TargetGenerator.targetGenerator;
 
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -42,8 +45,8 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
     @Wither(AccessLevel.PRIVATE)
     public final PropertyMap propertyMap;
 
-    public static TestServiceRunnerJetty defaults(ServiceConfig serviceConfig) {
-        return new TestServiceRunnerJetty(serviceConfig, identity(), identity(), identity(), null, PropertyMap.empty);
+    public static TestServiceRunnerJetty testServiceRunnerJetty(ServiceConfig serviceConfig) {
+        return new TestServiceRunnerJetty(serviceConfig, identity(), identity(), identity(), null, PropertyMap.propertyMap);
     }
 
 
@@ -103,12 +106,12 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
         uri = UriBuilder.fromUri(uri).host("localhost").build();
 
         ClientGenerator clientGenerator = clientConfigurator.apply(
-                ClientGenerator.defaults(serviceConfigwithProps.serviceDefinition)
+                clientGenerator(serviceConfigwithProps.serviceDefinition)
         );
         Client client = clientGenerator.generate();
-        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, UriBuilder.fromUri(uri).build()));
+        StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, UriBuilder.fromUri(uri).build()));
 
-        TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
+        TargetGenerator targetGenerator = targetConfigurator.apply(targetGenerator(client, uri));
 
         return new Runtime(runningServiceRunner, uri, stubGenerator, clientGenerator, targetGenerator);
     }

@@ -27,8 +27,8 @@ import java.util.Collection;
 @Getter
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
-    public final static ElasticsearchAddonMockImpl defaults = new ElasticsearchAddonMockImpl(null, null, null, null, true);
+public class ElasticsearchMockAddon implements ElasticsearchAddon {
+    public final static ElasticsearchMockAddon elasticsearchMockAddon = new ElasticsearchMockAddon(null, null, null, null, true);
 
     @Wither(AccessLevel.PRIVATE)
     private final Path path;
@@ -47,7 +47,7 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
     public final boolean unitTest;
 
     @Override
-    public ElasticsearchAddonMockImpl initialize(ServiceConfig serviceConfig) {
+    public ElasticsearchMockAddon initialize(ServiceConfig serviceConfig) {
         Path path;
         Node node;
 
@@ -59,9 +59,9 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
         }
 
         Settings settings = Settings.builder()
-                                    .put("cluster.name", "test-search-api-5-local_junit")
-                                    .put("node.name", "elastic-client")
-                                    .build();
+                .put("cluster.name", "test-search-api-5-local_junit")
+                .put("node.name", "elastic-client")
+                .build();
 
         InetAddress address = null;
         try {
@@ -71,11 +71,11 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
         }
 
         return this.withNode(node)
-                   .withPath(path)
-                   .withClient(
-                           new PreBuiltTransportClient(settings)
-                                   .addTransportAddress(new TransportAddress(address, 9311))
-                   );
+                .withPath(path)
+                .withClient(
+                        new PreBuiltTransportClient(settings)
+                                .addTransportAddress(new TransportAddress(address, 9311))
+                );
     }
 
     @Override

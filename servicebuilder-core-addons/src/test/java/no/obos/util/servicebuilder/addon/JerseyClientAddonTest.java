@@ -2,8 +2,6 @@ package no.obos.util.servicebuilder.addon;
 
 import io.swagger.annotations.Api;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.ServiceDefinitionUtil;
-import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestService.Resource;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import org.junit.Test;
@@ -15,8 +13,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.time.LocalDate;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestService.Payload;
-import static no.obos.util.servicebuilder.TestService.instance;
+import static no.obos.util.servicebuilder.TestService.testService;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static no.obos.util.servicebuilder.addon.JerseyClientAddon.jerseyClientAddon;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,9 +34,9 @@ public class JerseyClientAddonTest {
         when(nestedResourceMock.get()).thenReturn(expected);
 
         Payload actual =
-                nestedTestService.oneShot((clientconfig, uri) -> TestServiceRunner.defaults(
+                nestedRunner.oneShot((clientconfig, uri) -> testServiceRunner(
                         outerServiceConfig
-                                .addon(jerseyClientAddon(TestService.instance)
+                                .addon(jerseyClientAddon(testService)
                                         .clientConfigBase(clientconfig)
                                         .apiPrefix(null)
                                         .apptoken(false)
@@ -46,12 +47,12 @@ public class JerseyClientAddonTest {
     }
 
 
-    TestServiceRunner nestedTestService = TestServiceRunner.defaults(
-            ServiceConfig.defaults(instance)
+    TestServiceRunner nestedRunner = testServiceRunner(
+            serviceConfig(testService)
                     .bind(nestedResourceMock, Resource.class)
     );
 
-    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple("outer", OuterResource.class))
+    ServiceConfig outerServiceConfig = serviceConfig(stubServiceDefinition("outer", OuterResource.class))
             .addon(exceptionMapperAddon)
             .bind(OuterResourceImpl.class, OuterResource.class);
 

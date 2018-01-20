@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TemplateCrudJdbiIntegrationTest {
@@ -25,7 +26,7 @@ public class TemplateCrudJdbiIntegrationTest {
                     .script("CREATE TABLE template (id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR, value DOUBLE, startDate DATE)")
             );
 
-    final TestServiceRunner runner = TestServiceRunner.defaults(config);
+    final TestServiceRunner runner = testServiceRunner(config);
 
     static final TemplateDto original = TemplateDtoTypes.late(new Random(350));
 

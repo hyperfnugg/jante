@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder.addon;
 
 import io.swagger.annotations.Api;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -14,6 +13,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.WebTarget;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static no.obos.util.servicebuilder.addon.JerseyClientAddon.jerseyClientAddon;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,20 +28,20 @@ public class JerseyClientAddonMultiServiceTest {
 
     @Test
     public void injection_of_clients_works() {
-        TestServiceRunner.Runtime nestedRuntime1 = nestedTestService1.start().runtime;
-        TestServiceRunner.Runtime nestedRuntime2 = nestedTestService2.start().runtime;
+        TestServiceRunner.Runtime nestedRuntime1 = nestedRunner1.start().runtime;
+        TestServiceRunner.Runtime nestedRuntime2 = nestedRunner2.start().runtime;
         try {
 
 
-            TestServiceRunner.defaults(
-                    outerServiceConfig
-                            .addon(jerseyClientAddon(ServiceDefinitionUtil.simple(NESTED_NAME1, Nested1.class))
+            testServiceRunner(
+                    outerConfig
+                            .addon(jerseyClientAddon(stubServiceDefinition(NESTED_NAME1, Nested1.class))
                                     .clientConfigBase(nestedRuntime1.clientConfig)
                                     .apptoken(false)
                                     .apiPrefix(null)
                                     .uri(nestedRuntime1.uri)
                             )
-                            .addon(jerseyClientAddon(ServiceDefinitionUtil.simple(NESTED_NAME2, Nested2.class))
+                            .addon(jerseyClientAddon(stubServiceDefinition(NESTED_NAME2, Nested2.class))
                                     .clientConfigBase(nestedRuntime2.clientConfig)
                                     .apptoken(false)
                                     .apiPrefix(null)
@@ -64,18 +66,18 @@ public class JerseyClientAddonMultiServiceTest {
     }
 
 
-    TestServiceRunner nestedTestService1 = TestServiceRunner.defaults(
-            ServiceConfig.defaults(ServiceDefinitionUtil.simple(NESTED_NAME1, Nested1.class))
+    TestServiceRunner nestedRunner1 = testServiceRunner(
+            serviceConfig(stubServiceDefinition(NESTED_NAME1, Nested1.class))
                     .addon(exceptionMapperAddon)
                     .bind(nestedMock1, Nested1.class)
     );
-    TestServiceRunner nestedTestService2 = TestServiceRunner.defaults(
-            ServiceConfig.defaults(ServiceDefinitionUtil.simple(NESTED_NAME2, Nested2.class))
+    TestServiceRunner nestedRunner2 = testServiceRunner(
+            serviceConfig(stubServiceDefinition(NESTED_NAME2, Nested2.class))
                     .addon(exceptionMapperAddon)
                     .bind(nestedMock2, Nested2.class)
     );
 
-    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple("outer", Outer.class))
+    ServiceConfig outerConfig = serviceConfig(stubServiceDefinition("outer", Outer.class))
             .addon(exceptionMapperAddon)
             .bind(OuterImpl.class, Outer.class);
 

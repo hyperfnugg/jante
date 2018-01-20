@@ -7,7 +7,6 @@ import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
 import no.obos.util.servicebuilder.model.Addon;
@@ -23,6 +22,10 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+
+import static no.obos.util.servicebuilder.client.ClientGenerator.clientGenerator;
+import static no.obos.util.servicebuilder.client.StubGenerator.stubGenerator;
+import static no.obos.util.servicebuilder.client.TargetGenerator.targetGenerator;
 
 /**
  * Genererer klienter for en service med jersey klient-api og binder dem til context.
@@ -63,7 +66,7 @@ public class JerseyClientAddon implements Addon {
         String name = serviceDefinition.getName();
         String prefix = name + ".";
 
-        String url = properties.requireWithFallback(prefix + CONFIG_KEY_URL, uri==null?null:uri.toString());
+        String url = properties.requireWithFallback(prefix + CONFIG_KEY_URL, uri == null ? null : uri.toString());
         URI uri = URI.create(url);
         if (addApiVersionToPath) {
             uri = UriBuilder.fromUri(uri).path("s" + apiVersion).build();
@@ -77,14 +80,14 @@ public class JerseyClientAddon implements Addon {
         String clientAppName = serviceConfig.serviceDefinition.getName()
                 + ":"
                 + ApiVersionUtil.getApiVersion(serviceConfig.serviceDefinition.getClass());
-        Client client = ClientGenerator.defaults(serviceDefinition)
+        Client client = clientGenerator(serviceDefinition)
                 .clientConfigBase(clientConfigBase)
                 .clientAppName(clientAppName)
                 .generate();
-        StubGenerator stubGenerator = StubGenerator.defaults(client, uri)
+        StubGenerator stubGenerator = stubGenerator(client, uri)
                 .apiPath(apiPrefix);
 
-        TargetGenerator targetGenerator = TargetGenerator.defaults(client, uri)
+        TargetGenerator targetGenerator = targetGenerator(client, uri)
                 .throwExceptionForErrors(true);
 
         return withRuntime(new Runtime(client, stubGenerator, targetGenerator));

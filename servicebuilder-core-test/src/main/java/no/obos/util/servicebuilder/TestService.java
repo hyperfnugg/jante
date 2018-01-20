@@ -16,6 +16,8 @@ import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
 import java.util.List;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+
 public class TestService implements ServiceDefinition {
 
     public static final String PATH = "path";
@@ -63,7 +65,7 @@ public class TestService implements ServiceDefinition {
         return Lists.newArrayList(Resource.class);
     }
 
-    public final static TestService instance = new TestService();
-    public final static ServiceConfig config = ServiceConfig.defaults(instance)
+    public final static TestService testService = new TestService();
+    public final static ServiceConfig config = serviceConfig(testService)
             .bind(TestService.Impl.class, TestService.Resource.class);
 }

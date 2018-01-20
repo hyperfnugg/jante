@@ -3,10 +3,9 @@ package es;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.addon.*;
+import no.obos.util.servicebuilder.addon.ElasticsearchAddon;
 import no.obos.util.servicebuilder.es.Searcher;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
@@ -14,7 +13,6 @@ import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.explain.ExplainRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
-import org.elasticsearch.node.NodeValidationException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,9 +24,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.UnknownHostException;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon.elasticsearchIndexAddon;
+import static no.obos.util.servicebuilder.addon.ElasticsearchMockAddon.elasticsearchMockAddon;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static no.obos.util.servicebuilder.addon.ServerLogAddon.serverLogAddon;
 
@@ -36,11 +37,11 @@ import static no.obos.util.servicebuilder.addon.ServerLogAddon.serverLogAddon;
 @Slf4j
 public class SearcherTest {
 
-    private static TestServiceRunner testServiceRunner;
+    private static TestServiceRunner runner;
 
     @Test
     public void testValidConnectionBetweenClientAndServer() {
-        testServiceRunner.chain()
+        runner.chain()
                 .addon(ElasticsearchAddon.class, it -> {
                     Client client = it.getClient();
                     ClusterHealthResponse clusterHealthResponse = client.admin().cluster().health(new ClusterHealthRequest()).actionGet();
@@ -63,16 +64,15 @@ public class SearcherTest {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
-        ServiceConfig serviceConfig = ServiceConfig
-                .defaults(ServiceDefinitionUtil.simple(Resource.class))
-                .addon(exceptionMapperAddon)
-                .addon(serverLogAddon)
-                .addon(ElasticsearchAddonMockImpl.defaults)
-                .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class))
-                .addon(elasticsearchIndexAddon("anotherIndex", String.class))
-                .bind(ResourceImpl.class, Resource.class);
-        testServiceRunner = TestServiceRunner.defaults(serviceConfig);
-        TestServiceRunner.defaults(serviceConfig);
+        ServiceConfig serviceConfig =
+                serviceConfig(stubServiceDefinition(Resource.class))
+                        .addon(exceptionMapperAddon)
+                        .addon(serverLogAddon)
+                        .addon(elasticsearchMockAddon)
+                        .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class))
+                        .addon(elasticsearchIndexAddon("anotherIndex", String.class))
+                        .bind(ResourceImpl.class, Resource.class);
+        runner = testServiceRunner(serviceConfig);
     }
 
     @Api

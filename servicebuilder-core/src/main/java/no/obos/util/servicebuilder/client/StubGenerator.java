@@ -34,7 +34,7 @@ public class StubGenerator {
     final ImmutableMap<String, String> headers;
 
 
-    public static StubGenerator defaults(Client client, URI uri) {
+    public static StubGenerator stubGenerator(Client client, URI uri) {
         return new StubGenerator(client, uri, true, true, "api", ImmutableList.of(), ImmutableMap.of());
     }
 
@@ -49,7 +49,7 @@ public class StubGenerator {
         if (apiPath != null) {
             webTarget = webTarget.path(apiPath);
         }
-        if(throwExceptionForErrors) {
+        if (throwExceptionForErrors) {
             webTarget.register(ClientErrorResponseFilter.class);
         }
         webTarget.register(RequestIdClientFilter.class);

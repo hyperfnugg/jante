@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Set;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AddonStartOrderTest {
@@ -22,7 +23,7 @@ public class AddonStartOrderTest {
 
         @Override
         public Version getVersion() {
-            return new Version(1,0,0);
+            return new Version(1, 0, 0);
         }
 
         @Override
@@ -38,7 +39,7 @@ public class AddonStartOrderTest {
     public void addons_are_started_in_config_order_when_no_order_specified() {
         //Given
         final List<Integer> startOrder = Lists.newArrayList();
-        ServiceConfig config = ServiceConfig.defaults(serviceDefinition)
+        ServiceConfig config = serviceConfig(serviceDefinition)
                 .addon(new Addon() {
                     @Override
                     public Addon initialize(ServiceConfig serviceConfig) {
@@ -85,7 +86,7 @@ public class AddonStartOrderTest {
             }
         }
 
-        ServiceConfig config = ServiceConfig.defaults(serviceDefinition)
+        ServiceConfig config = serviceConfig(serviceDefinition)
                 .addon(new Dependent())
                 .addon(new Dependee());
 
@@ -134,7 +135,7 @@ public class AddonStartOrderTest {
             }
         }
 
-        ServiceConfig config = ServiceConfig.defaults(serviceDefinition)
+        ServiceConfig config = serviceConfig(serviceDefinition)
                 .addon(new Dependent())
                 .addon(new Dependee())
                 .addon(new Immediate());

@@ -14,12 +14,12 @@ import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_PORT;
 @Slf4j
 @AllArgsConstructor
 public class ServiceRunner {
-    final ServiceConfig serviceConfig;
+    final ServiceConfig config;
     final JettyServer jettyServer;
     final JerseyConfig jerseyConfig;
     JettyServer.Configuration jettyConfig;
 
-    public ServiceRunner(ServiceConfig serviceConfigRaw, PropertyProvider properties) {
+    ServiceRunner(ServiceConfig serviceConfigRaw, PropertyProvider properties) {
         serviceConfigRaw = serviceConfigRaw.addPropertiesAndApplyToBindings(properties);
         ServiceConfig serviceConfigWithProps = serviceConfigRaw
                 .withAddons(ImmutableList.copyOf(serviceConfigRaw
@@ -28,9 +28,9 @@ public class ServiceRunner {
                         .collect(toList()
                         ))
                 );
-        serviceConfig = ServiceConfigInitializer.finalize(serviceConfigWithProps);
+        config = ServiceConfigInitializer.finalize(serviceConfigWithProps);
         properties.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
-        jerseyConfig = new JerseyConfig(serviceConfig.serviceDefinition);
+        jerseyConfig = new JerseyConfig(config.serviceDefinition);
         jettyConfig = JettyServer.Configuration.builder()
                 .bindPort(Integer.valueOf(properties.get(CONFIG_KEY_SERVER_PORT)))
                 .contextPath(properties.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
@@ -39,12 +39,12 @@ public class ServiceRunner {
 
     }
 
-    public static ServiceRunner defaults(ServiceConfig serviceConfig, Class<?> versionedClass) {
+    public static ServiceRunner serviceRunner(ServiceConfig serviceConfig, Class<?> versionedClass) {
         PropertyProvider properties = PropertyMap.fromJvmArgs();
         return new ServiceRunner(serviceConfig, properties);
     }
 
-    public static ServiceRunner defaults(ServiceConfig serviceConfig) {
+    public static ServiceRunner serviceRunner(ServiceConfig serviceConfig) {
 
         Class<?> versionedClass;
         if (serviceConfig.serviceDefinition.getClass().getCanonicalName() != null) {
@@ -59,20 +59,19 @@ public class ServiceRunner {
         return new ServiceRunner(serviceConfig, properties);
     }
 
-    public static ServiceRunner defaults(ServiceConfig serviceConfig, PropertyProvider properties) {
+    public static ServiceRunner serviceRunner(ServiceConfig serviceConfig, PropertyProvider properties) {
         return new ServiceRunner(serviceConfig, properties);
     }
 
-    //    Map<Addon2, AddonRuntime2> runtimes = Maps.newHashMap();
     public ServiceRunner start() {
 
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
         jerseyConfig
-                .addRegistrators(serviceConfig.registrators)
-                .addBinders(serviceConfig.binders);
-        serviceConfig.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
-        serviceConfig.addons.forEach(it -> it.addToJettyServer(jettyServer));
+                .addRegistrators(config.registrators)
+                .addBinders(config.binders);
+        config.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
+        config.addons.forEach(it -> it.addToJettyServer(jettyServer));
         jettyServer.start();
         return this;
     }
@@ -82,7 +81,7 @@ public class ServiceRunner {
     }
 
     public void stop() {
-        serviceConfig.addons.forEach(addon -> {
+        config.addons.forEach(addon -> {
             try {
                 addon.cleanUp();
             } catch (RuntimeException ex) {

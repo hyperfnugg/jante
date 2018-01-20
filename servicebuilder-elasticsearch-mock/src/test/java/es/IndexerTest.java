@@ -6,14 +6,11 @@ import com.google.common.collect.Sets;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.addon.*;
 import no.obos.util.servicebuilder.es.Indexer;
 import no.obos.util.servicebuilder.es.Searcher;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.node.NodeValidationException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -26,7 +23,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon.elasticsearchIndexAddon;
+import static no.obos.util.servicebuilder.addon.ElasticsearchMockAddon.elasticsearchMockAddon;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static no.obos.util.servicebuilder.addon.ServerLogAddon.serverLogAddon;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 @Slf4j
 public class IndexerTest {
 
-    private static TestServiceRunner testServiceRunner;
+    private static TestServiceRunner runner;
 
     @Test
     public void testValidConnectionBetweenClientAndServer() {
@@ -43,7 +44,7 @@ public class IndexerTest {
         TestService.Payload p2 = new TestService.Payload("fieldname2", LocalDate.now().plusYears(1));
         TestService.Payload p3 = new TestService.Payload("fieldname3", LocalDate.now());
 
-        testServiceRunner.chain()
+        runner.chain()
                 .call(Resource.class, it -> it.index(Lists.newArrayList(p1, p2, p3)))
                 .call(Resource.class, it -> {
                     Set<TestService.Payload> expected = ImmutableSet.of(p3);
@@ -65,17 +66,16 @@ public class IndexerTest {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
-        ServiceConfig serviceConfig = ServiceConfig
-                .defaults(ServiceDefinitionUtil.simple(Resource.class))
-                .addon(ElasticsearchAddonMockImpl.defaults)
-                .addon(exceptionMapperAddon)
-                .addon(serverLogAddon)
-                .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class)
-                        .doIndexing(true)
-                )
-                .bind(ResourceImpl.class, Resource.class);
-        testServiceRunner = TestServiceRunner.defaults(serviceConfig);
-        TestServiceRunner.defaults(serviceConfig);
+        ServiceConfig serviceConfig =
+                serviceConfig(stubServiceDefinition(Resource.class))
+                        .addon(elasticsearchMockAddon)
+                        .addon(exceptionMapperAddon)
+                        .addon(serverLogAddon)
+                        .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class)
+                                .doIndexing(true)
+                        )
+                        .bind(ResourceImpl.class, Resource.class);
+        runner = testServiceRunner(serviceConfig);
     }
 
     @Api
@@ -119,14 +119,14 @@ public class IndexerTest {
                 schema = jsonBuilder()
                         .startObject()
                         .startObject("properties")
-                            .startObject("date")
-                                .field("type", "date")
-                                .field("index", true)
-                            .endObject()
-                            .startObject("string")
-                                .field("type", "text")
-                                .field("index", true)
-                            .endObject()
+                        .startObject("date")
+                        .field("type", "date")
+                        .field("index", true)
+                        .endObject()
+                        .startObject("string")
+                        .field("type", "text")
+                        .field("index", true)
+                        .endObject()
                         .endObject()
                         .endObject().string();
             } catch (IOException e) {

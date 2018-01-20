@@ -16,11 +16,11 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 public class PropertyMap extends RecursiveExpansionPropertyProvider {
     public final ImmutableMap<String, String> properties;
 
-    public PropertyMap(Map<String, String> properties) {
+    private PropertyMap(Map<String, String> properties) {
         this.properties = ImmutableMap.copyOf(properties);
     }
 
-    public static PropertyMap empty = new PropertyMap(ImmutableMap.of());
+    public static PropertyMap propertyMap = new PropertyMap(ImmutableMap.of());
 
     public PropertyMap put(String key, String value) {
         return new PropertyMap(GuavaHelper.plus(properties, key, value));
@@ -71,7 +71,7 @@ public class PropertyMap extends RecursiveExpansionPropertyProvider {
             // load a properties file
             Properties prop = new Properties();
             prop.load(input);
-            return empty.putAllProperties(prop);
+            return propertyMap.putAllProperties(prop);
 
 
         } catch (IOException ex) {

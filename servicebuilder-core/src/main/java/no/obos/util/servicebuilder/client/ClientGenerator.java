@@ -28,7 +28,7 @@ public class ClientGenerator {
     @Wither(AccessLevel.PRIVATE)
     public final String clientAppName;
 
-    public static ClientGenerator defaults(ServiceDefinition serviceDefinition) {
+    public static ClientGenerator clientGenerator(ServiceDefinition serviceDefinition) {
         return new ClientGenerator(null, serviceDefinition, null);
     }
 

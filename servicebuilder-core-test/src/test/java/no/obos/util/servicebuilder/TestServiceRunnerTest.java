@@ -8,20 +8,23 @@ import org.mockito.Mockito;
 import javax.ws.rs.client.ClientBuilder;
 import java.time.LocalDate;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.TestService.testService;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 public class TestServiceRunnerTest {
-    Resource impl = Mockito.mock(Resource.class);
-    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
-            ServiceConfig.defaults(TestService.instance)
+    private Resource impl = Mockito.mock(Resource.class);
+    private TestServiceRunner runner = testServiceRunner(
+            serviceConfig(testService)
                     .bind(impl, Resource.class)
     );
 
     @Test
     public void can_call_basic() {
         when(impl.get()).thenReturn(TestService.defaultPayload);
-        String payload = testServiceRunner.oneShot(((clientConfig, uri) ->
+        String payload = runner.oneShot(((clientConfig, uri) ->
 
                         ClientBuilder.newClient(clientConfig).target(uri)
                                 .path(TestService.PATH)
@@ -41,7 +44,7 @@ public class TestServiceRunnerTest {
     @Test
     public void can_call_target() {
         when(impl.get()).thenReturn(TestService.defaultPayload);
-        String payload = testServiceRunner.oneShot((target ->
+        String payload = runner.oneShot((target ->
                         target
                                 .path(TestService.PATH)
                                 .request()
@@ -60,7 +63,7 @@ public class TestServiceRunnerTest {
     @Test
     public void can_call_stub() {
         when(impl.get()).thenReturn(TestService.defaultPayload);
-        Payload payload = testServiceRunner
+        Payload payload = runner
                 .oneShot(Resource.class, (Resource::get));
         assertThat(payload).isEqualTo(TestService.defaultPayload);
     }
@@ -70,7 +73,7 @@ public class TestServiceRunnerTest {
         Payload expected1 = new Payload("eple", LocalDate.now().minusYears(55));
         Payload expected2 = new Payload("banan", LocalDate.now().minusYears(66));
 
-        TestServiceRunner.Runtime runtime = testServiceRunner.start().runtime;
+        TestServiceRunner.Runtime runtime = runner.start().runtime;
 
         when(impl.get()).thenReturn(expected1);
         Payload actual1 = runtime.call(Resource.class, Resource::get);

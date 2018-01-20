@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 
 import static java.util.Collections.singletonList;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,7 @@ public class TemplateResourceUnitTest {
         TemplateDto expectedDto = TemplateDtoTypes.early(new Random(400));
         Template expected = Template.ofDto(expectedDto);
         TemplateController controller = Mockito.mock(TemplateController.class);
-        TestServiceRunner runner = TestServiceRunner.defaults(config
+        TestServiceRunner runner = testServiceRunner(config
                 .bind(controller, TemplateController.class)
         );
 

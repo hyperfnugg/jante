@@ -19,6 +19,7 @@ import org.junit.runners.Parameterized;
 import javax.inject.Singleton;
 import java.util.Collection;
 
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.template.Main.commonConfig;
 import static no.obos.util.template.Main.mainConfig;
 import static org.assertj.core.api.Assertions.*;
@@ -30,7 +31,7 @@ public class TemplateCrudForVariousBackends {
 
     public TemplateCrudForVariousBackends(ServiceConfig config) {
         this.config = config;
-        runner = TestServiceRunner.defaults(config);
+        runner = testServiceRunner(config);
     }
 
     @Parameterized.Parameters

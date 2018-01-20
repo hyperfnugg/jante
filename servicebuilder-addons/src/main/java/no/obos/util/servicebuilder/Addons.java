@@ -4,8 +4,10 @@ import no.obos.util.servicebuilder.addon.*;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.addon.BasicDatasourceAddon.basicDatasourceAddon;
 import static no.obos.util.servicebuilder.addon.CorsFilterAddon.corsFilterAddon;
+import static no.obos.util.servicebuilder.addon.ElasticsearchMockAddon.elasticsearchMockAddon;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
 import static no.obos.util.servicebuilder.addon.JdbiAddon.jdbiAddon;
@@ -120,9 +122,10 @@ public class Addons {
         <artifactId>servicebuilder-elasticsearch-mock</artifactId>
     </dependency>
     */
-    public static ElasticsearchAddonMockImpl elasticsearchMock() {
-        return ElasticsearchAddonMockImpl.defaults;
+    public static ElasticsearchMockAddon elasticsearchMock() {
+        return elasticsearchMockAddon;
     }
+
     /*
     <dependency>
         <groupId>no.obos.util</groupId>
@@ -135,7 +138,7 @@ public class Addons {
 
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
-        return ServiceConfig.defaults(serviceDefinition)
+        return serviceConfig(serviceDefinition)
                 .addon(swaggerAddon)
                 .addon(corsFilterAddon)
                 .addon(RequestIdAddon.requestIdAddon)

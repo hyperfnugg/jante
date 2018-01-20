@@ -6,12 +6,13 @@ import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
 public class TestServiceRunnerStubTest {
-    Controller controller = Mockito.mock(Controller.class);
-    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
+    private Controller controller = Mockito.mock(Controller.class);
+    private TestServiceRunner runner = testServiceRunner(
             TestServiceFull.config
                     .bind(controller, Controller.class)
     );
@@ -25,7 +26,7 @@ public class TestServiceRunnerStubTest {
                 .build();
 
         //when
-        testServiceRunner
+        runner
                 .stubConfigurator(cfg -> cfg.header("Banan", "kjakablakken"))
                 .oneShot(ResourceFull.class, (ResourceFull::get));
 
@@ -45,7 +46,7 @@ public class TestServiceRunnerStubTest {
                 .build();
 
         //when
-        testServiceRunner
+        runner
                 .stubConfigurator(cfg -> cfg.header("Banan", "kjakablakken"))
                 .oneShot(ResourceFull.class, it -> it.getExplicitContext("header1", 2, "qp1", 22));
 
@@ -65,7 +66,7 @@ public class TestServiceRunnerStubTest {
                 .build();
 
         //when
-        TestServiceRunner.Runtime runtime = testServiceRunner.start().runtime;
+        TestServiceRunner.Runtime runtime = runner.start().runtime;
 
         //then
         runtime

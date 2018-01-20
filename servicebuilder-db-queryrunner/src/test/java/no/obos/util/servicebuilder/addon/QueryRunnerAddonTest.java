@@ -1,8 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.ServiceDefinitionUtil;
-import no.obos.util.servicebuilder.TestServiceRunner;
 import no.obos.util.servicebuilder.queryrunner.QueryRunnerAdapter;
 import org.apache.commons.dbutils.QueryRunner;
 import org.junit.Test;
@@ -14,6 +12,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
 import static no.obos.util.servicebuilder.addon.QueryRunnerAddon.queryRunnerAddon;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class QueryRunnerAddonTest {
 
-    final ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
+    final ServiceConfig serviceConfig = serviceConfig(stubServiceDefinition(Api.class))
             .addon(exceptionMapperAddon)
             .addon(h2InMemoryDatasourceAddon
                     .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
@@ -35,7 +36,7 @@ public class QueryRunnerAddonTest {
     public void runsWithQueryRunner() {
         ServiceConfig serviceConfig = this.serviceConfig
                 .bind(ApiImpl.class, Api.class);
-        Integer actual = TestServiceRunner.defaults(serviceConfig).oneShot(Api.class, Api::get);
+        Integer actual = testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);
         assertThat(actual).isEqualTo(303);
     }
 
@@ -43,7 +44,7 @@ public class QueryRunnerAddonTest {
     public void runsWithQueryRunnerAdapter() {
         ServiceConfig serviceConfig = this.serviceConfig
                 .bind(ApiImplAdapter.class, Api.class);
-        Integer actual = TestServiceRunner.defaults(serviceConfig).oneShot(Api.class, Api::get);
+        Integer actual = testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);
         assertThat(actual).isEqualTo(303);
     }
 

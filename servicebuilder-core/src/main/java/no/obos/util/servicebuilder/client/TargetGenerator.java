@@ -24,7 +24,7 @@ public class TargetGenerator {
     @Wither(AccessLevel.PRIVATE)
     final boolean logging;
 
-    public static TargetGenerator defaults(Client client, URI uri) {
+    public static TargetGenerator targetGenerator(Client client, URI uri) {
         return new TargetGenerator(client, uri, ImmutableMap.of(), false, true);
     }
 
@@ -38,7 +38,7 @@ public class TargetGenerator {
         final Map<String, String> headersToUse = Maps.newHashMap(headers);
 
 
-        if (! headersToUse.isEmpty()) {
+        if (!headersToUse.isEmpty()) {
             target.register(new WebTargetRequestHeaderFilter(ImmutableMap.copyOf(headersToUse)));
         }
 

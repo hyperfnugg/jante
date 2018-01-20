@@ -1,11 +1,7 @@
 package no.obos.util.servicebuilder.addon;
 
-import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestService.Resource;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.client.ClientGenerator;
-import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
 import no.obos.util.servicebuilder.model.HttpProblem;
@@ -17,7 +13,12 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import java.net.URI;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.TestService.testService;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.client.ClientGenerator.clientGenerator;
+import static no.obos.util.servicebuilder.client.StubGenerator.stubGenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,8 +27,8 @@ public class JerseyClientAddonErrorHandlingTest {
 
 
     Resource resource = mock(Resource.class);
-    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
-            ServiceConfig.defaults(TestService.instance)
+    TestServiceRunner runner = testServiceRunner(
+            serviceConfig(testService)
                     .addon(exceptionMapperAddon
                             .stacktraceConfig(RuntimeException.class, false)
                     )
@@ -41,7 +42,7 @@ public class JerseyClientAddonErrorHandlingTest {
         when(resource.get()).thenThrow(new RuntimeException("banan"));
         //when
         try {
-            testServiceRunner
+            runner
                     .oneShot(Resource.class, Resource::get);
             Assert.fail();
         } catch (ExternalResourceException actual) {
@@ -79,9 +80,9 @@ public class JerseyClientAddonErrorHandlingTest {
 
     @Test(expected = ProcessingException.class)
     public void no_custom_error_handling_when_call_fails_before_network() {
-        Client client = ClientGenerator.defaults(TestService.instance).generate();
+        Client client = clientGenerator(testService).generate();
         //given
-        Resource resource = StubGenerator.defaults(client, URI.create("http://will.fail.badly")).generateClient(Resource.class);
+        Resource resource = stubGenerator(client, URI.create("http://will.fail.badly")).generateClient(Resource.class);
         //when
         resource.get();
         Assert.fail();

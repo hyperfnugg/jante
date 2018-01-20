@@ -17,6 +17,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
+import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.TestService.testService;
+import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -24,19 +27,19 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExceptionMapperAddonTest {
-    TestService.Resource testService = mock(TestService.Resource.class);
-    ServiceConfig serviceConfig = ServiceConfig.defaults(TestService.instance)
-            .bind(testService, TestService.Resource.class)
+    TestService.Resource resource = mock(TestService.Resource.class);
+    ServiceConfig config = serviceConfig(testService)
+            .bind(resource, TestService.Resource.class)
             .addon(exceptionMapperAddon.stacktraceConfig(RuntimeException.class, false));
-    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
+    TestServiceRunner runner = testServiceRunner(config);
 
     @Test
     public void userMessageException() throws IOException {
         //Given
-        when(testService.get()).thenThrow(new UserMessageException("Boooom!", 421));
+        when(resource.get()).thenThrow(new UserMessageException("Boooom!", 421));
 
         //when
-        Response response = testServiceRunner.oneShot((clientconfig, uri) ->
+        Response response = runner.oneShot((clientconfig, uri) ->
                 ClientBuilder.newClient(clientconfig)
                         .target(uri)
                         .path(TestService.PATH)
@@ -45,7 +48,7 @@ public class ExceptionMapperAddonTest {
 
         //then
         String actualJson = response.readEntity(String.class);
-        ObjectMapper objectMapper = JsonUtil.createObjectMapper(serviceConfig.serviceDefinition.getSerializationSpec());
+        ObjectMapper objectMapper = JsonUtil.createObjectMapper(config.serviceDefinition.getSerializationSpec());
         HttpProblem actual =
                 objectMapper.readValue(actualJson, HttpProblem.class);
         assertThat(actual.detail).isEqualTo("Boooom!");
@@ -66,10 +69,10 @@ public class ExceptionMapperAddonTest {
                 .build();
 
         //Given
-        when(testService.get()).thenThrow(new HttpProblemException(expected, LogLevel.INFO, false));
+        when(resource.get()).thenThrow(new HttpProblemException(expected, LogLevel.INFO, false));
 
         //when
-        Response response = testServiceRunner.oneShot((clientconfig, uri) ->
+        Response response = runner.oneShot((clientconfig, uri) ->
                 ClientBuilder.newClient(clientconfig).target(uri)
                         .path(TestService.PATH)
                         .request()
@@ -77,7 +80,7 @@ public class ExceptionMapperAddonTest {
 
         //then
         String actualJson = response.readEntity(String.class);
-        ObjectMapper objectMapper = JsonUtil.createObjectMapper(serviceConfig.serviceDefinition.getSerializationSpec());
+        ObjectMapper objectMapper = JsonUtil.createObjectMapper(config.serviceDefinition.getSerializationSpec());
         HttpProblem actual =
                 objectMapper.readValue(actualJson, HttpProblem.class);
 

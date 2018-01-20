@@ -33,7 +33,7 @@ public class ServiceConfig {
     final ImmutableList<Function<PropertyProvider, JerseyConfig.Hk2ConfigModule>> hk2ConfigProp;
 
 
-    public static ServiceConfig defaults(ServiceDefinition serviceDefinition) {
+    public static ServiceConfig serviceConfig(ServiceDefinition serviceDefinition) {
         return new ServiceConfig(ImmutableList.of(), serviceDefinition, ImmutableList.of(), ImmutableList.of(), ImmutableList.of());
     }
 
@@ -153,7 +153,7 @@ public class ServiceConfig {
     public ServiceConfig removeAddon(Class<? extends Addon> addon) {
         return this
                 .withAddons(ImmutableList.copyOf(addons.stream()
-                        .filter(existingAddon -> ! addon.isInstance(existingAddon))
+                        .filter(existingAddon -> !addon.isInstance(existingAddon))
                         .collect(toList()))
                 );
     }

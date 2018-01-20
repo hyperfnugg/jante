@@ -24,6 +24,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.function.Function.identity;
+import static no.obos.util.servicebuilder.client.ClientGenerator.clientGenerator;
+import static no.obos.util.servicebuilder.client.StubGenerator.stubGenerator;
+import static no.obos.util.servicebuilder.client.TargetGenerator.targetGenerator;
 
 
 @Slf4j
@@ -42,10 +45,10 @@ public class TestServiceRunner implements TestServiceRunnerBase {
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
     @Wither(AccessLevel.PRIVATE)
-    public final PropertyMap propertyMap;
+    public final PropertyMap properties;
 
-    public static TestServiceRunner defaults(ServiceConfig serviceConfig) {
-        return new TestServiceRunner(serviceConfig, identity(), identity(), identity(), null, PropertyMap.empty);
+    public static TestServiceRunner testServiceRunner(ServiceConfig serviceConfig) {
+        return new TestServiceRunner(serviceConfig, identity(), identity(), identity(), null, PropertyMap.propertyMap);
     }
 
 
@@ -79,25 +82,25 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
         @Override
         public <T> T call(Function<WebTarget, T> testfun) {
-            TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
+            TargetGenerator targetGenerator = targetConfigurator.apply(targetGenerator(client, uri));
             return testfun.apply(targetGenerator.generate());
         }
 
         @Override
         public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
-            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri).apiPath(null));
+            StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, uri).apiPath(null));
             return testfun.apply(stubGenerator.generateClient(clazz));
         }
 
         @Override
         public <Y> void callVoid(Class<Y> clazz, Consumer<Y> testfun) {
-            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri).apiPath(null));
+            StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, uri).apiPath(null));
             testfun.accept(stubGenerator.generateClient(clazz));
         }
 
         @Override
         public void callVoid(Consumer<WebTarget> testfun) {
-            TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
+            TargetGenerator targetGenerator = targetConfigurator.apply(targetGenerator(client, uri));
             testfun.accept(targetGenerator.generate());
         }
 
@@ -117,7 +120,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
     public TestServiceRunner start() {
 
-        ServiceConfig serviceConfigwithProps = serviceConfig.addPropertiesAndApplyToBindings(propertyMap);
+        ServiceConfig serviceConfigwithProps = serviceConfig.addPropertiesAndApplyToBindings(properties);
         ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfigwithProps);
 
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
@@ -131,7 +134,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
         testContainer.start();
         ClientConfig clientConfig = testContainer.getClientConfig();
         ClientGenerator clientGenerator = clientConfigurator.apply(
-                ClientGenerator.defaults(serviceConfigWithContext.serviceDefinition)
+                clientGenerator(serviceConfigWithContext.serviceDefinition)
                         .clientConfigBase(clientConfig)
         );
         Client client = clientGenerator.generate();
@@ -176,7 +179,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
     }
 
     public TestServiceRunner property(String key, String value) {
-        return propertyMap(this.propertyMap.put(key, value));
+        return properties(this.properties.put(key, value));
     }
 
     public <Y> void oneShotVoid(Class<Y> clazz, Consumer<Y> testfun) {
@@ -201,8 +204,8 @@ public class TestServiceRunner implements TestServiceRunnerBase {
         return withTargetConfigurator(targetConfigurator);
     }
 
-    public TestServiceRunner propertyMap(PropertyMap propertyMap) {
-        return withPropertyMap(propertyMap);
+    public TestServiceRunner properties(PropertyMap properties) {
+        return withProperties(properties);
     }
 
     public TestServiceRunner serviceConfig(ServiceConfig serviceConfig) {

@@ -10,12 +10,12 @@ import no.obos.util.servicebuilder.model.Version;
 public class ServiceDefinitionUtil {
     public static final String ANONYMOUS_SERVICE_NAME = "anonymous_service";
 
-    public static ServiceDefinition simple(final String name, final Class... resources) {
+    public static ServiceDefinition stubServiceDefinition(final String name, final Class... resources) {
         ImmutableList<Class> classes = ImmutableList.copyOf(resources);
         return new TestServiceDefinition(name, classes);
     }
 
-    public static ServiceDefinition simple(final Class... resources) {
+    public static ServiceDefinition stubServiceDefinition(final Class... resources) {
         ImmutableList<Class> classes = ImmutableList.copyOf(resources);
         return new TestServiceDefinition(classes);
     }
