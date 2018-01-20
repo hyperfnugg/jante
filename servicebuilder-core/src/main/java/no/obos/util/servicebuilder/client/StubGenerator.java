@@ -19,7 +19,6 @@ import java.net.URI;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StubGenerator {
-    //    final String appToken;
     final Client client;
     final URI uri;
     @Wither(AccessLevel.PRIVATE)
@@ -27,15 +26,13 @@ public class StubGenerator {
     @Wither(AccessLevel.PRIVATE)
     final boolean throwExceptionForErrors;
     @Wither(AccessLevel.PRIVATE)
-    final String apiPath;
-    @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Cookie> cookies;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableMap<String, String> headers;
 
 
     public static StubGenerator stubGenerator(Client client, URI uri) {
-        return new StubGenerator(client, uri, true, true, "api", ImmutableList.of(), ImmutableMap.of());
+        return new StubGenerator(client, uri, true, true, ImmutableList.of(), ImmutableMap.of());
     }
 
     public <T> T generateClient(Class<T> resource) {
@@ -46,9 +43,6 @@ public class StubGenerator {
         MultivaluedMap<String, Object> headerArg = new MultivaluedHashMap<>(headers);
 
         WebTarget webTarget = clientToUse.target(uri);
-        if (apiPath != null) {
-            webTarget = webTarget.path(apiPath);
-        }
         if (throwExceptionForErrors) {
             webTarget.register(ClientErrorResponseFilter.class);
         }
@@ -76,9 +70,5 @@ public class StubGenerator {
 
     public StubGenerator logging(boolean logging) {
         return withLogging(logging);
-    }
-
-    public StubGenerator apiPath(String apiPath) {
-        return withApiPath(apiPath);
     }
 }

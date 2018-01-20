@@ -20,7 +20,6 @@ import org.glassfish.jersey.client.ClientConfig;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static no.obos.util.servicebuilder.client.ClientGenerator.clientGenerator;
@@ -39,25 +38,14 @@ public class JerseyClientAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final URI uri;
     @Wither(AccessLevel.PRIVATE)
-    public final boolean apptoken;
-    @Wither(AccessLevel.PRIVATE)
-    public final String apiPrefix;
-    @Wither(AccessLevel.PRIVATE)
     public final ClientConfig clientConfigBase;
     @Wither(AccessLevel.PRIVATE)
-    public final boolean monitorIntegration;
-    @Wither(AccessLevel.PRIVATE)
     public final boolean targetThrowsExceptions;
-    @Wither(AccessLevel.PRIVATE)
-    public final boolean addApiVersionToPath;
-    @Wither(AccessLevel.PRIVATE)
-    public final String apiVersion;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
     public static JerseyClientAddon jerseyClientAddon(ServiceDefinition serviceDefinition) {
-        String apiVersion = ApiVersionUtil.getApiVersion(serviceDefinition.getClass());
-        return new JerseyClientAddon(serviceDefinition, null, false, "api", null, true, true, true, apiVersion, null);
+        return new JerseyClientAddon(serviceDefinition, null, null, true, null);
     }
 
 
@@ -68,9 +56,6 @@ public class JerseyClientAddon implements Addon {
 
         String url = properties.requireWithFallback(prefix + CONFIG_KEY_URL, uri == null ? null : uri.toString());
         URI uri = URI.create(url);
-        if (addApiVersionToPath) {
-            uri = UriBuilder.fromUri(uri).path("s" + apiVersion).build();
-        }
         return this
                 .uri(uri);
     }
@@ -84,8 +69,7 @@ public class JerseyClientAddon implements Addon {
                 .clientConfigBase(clientConfigBase)
                 .clientAppName(clientAppName)
                 .generate();
-        StubGenerator stubGenerator = stubGenerator(client, uri)
-                .apiPath(apiPrefix);
+        StubGenerator stubGenerator = stubGenerator(client, uri);
 
         TargetGenerator targetGenerator = targetGenerator(client, uri)
                 .throwExceptionForErrors(true);
@@ -122,9 +106,7 @@ public class JerseyClientAddon implements Addon {
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
-        if (monitorIntegration) {
-            ObosHealthCheckRegistry.registerPingCheck(serviceDefinition.getName() + ": " + uri.toString(), uri.toString());
-        }
+        ObosHealthCheckRegistry.registerPingCheck(serviceDefinition.getName() + ": " + uri.toString(), uri.toString());
     }
 
 
@@ -171,27 +153,11 @@ public class JerseyClientAddon implements Addon {
         return withUri(uri);
     }
 
-    public JerseyClientAddon apptoken(boolean apptoken) {
-        return withApptoken(apptoken);
-    }
-
-    public JerseyClientAddon apiPrefix(String apiPrefix) {
-        return withApiPrefix(apiPrefix);
-    }
-
     public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {
         return withClientConfigBase(clientConfigBase);
     }
 
-    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {
-        return withMonitorIntegration(monitorIntegration);
-    }
-
     public JerseyClientAddon targetThrowsExceptions(boolean targetThrowsExceptions) {
         return withTargetThrowsExceptions(targetThrowsExceptions);
-    }
-
-    public JerseyClientAddon addApiVersionToPath(boolean addApiVersionToPath) {
-        return withAddApiVersionToPath(addApiVersionToPath);
     }
 }

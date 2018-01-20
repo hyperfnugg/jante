@@ -88,13 +88,13 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
         @Override
         public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
-            StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, uri).apiPath(null));
+            StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, uri));
             return testfun.apply(stubGenerator.generateClient(clazz));
         }
 
         @Override
         public <Y> void callVoid(Class<Y> clazz, Consumer<Y> testfun) {
-            StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, uri).apiPath(null));
+            StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, uri));
             testfun.accept(stubGenerator.generateClient(clazz));
         }
 

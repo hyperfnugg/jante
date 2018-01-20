@@ -6,13 +6,13 @@ import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
+import no.obos.util.servicebuilder.util.ExceptionUtil;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -28,19 +28,14 @@ public class WebAppAddon implements Addon {
     public final String pathSpec;
 
     @Wither(AccessLevel.PRIVATE)
-    public final URI resourceUri;
+    public final String resourceUri;
 
-    public static WebAppAddon webAppAddon = new WebAppAddon("/webapp/*", null);
-
+    public static WebAppAddon webAppAddon = new WebAppAddon("/webapp/*", "classpath://webapp");
 
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
-        try {
-            return this.resourceUri(new URI(properties.requireWithFallback(CONFIG_KEY_RESOURCE_URL, resourceUri==null?null:resourceUri.toString())));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        return this.resourceUri(properties.requireWithFallback(CONFIG_KEY_RESOURCE_URL, resourceUri));
     }
 
 
@@ -48,12 +43,13 @@ public class WebAppAddon implements Addon {
     public void addToJettyServer(JettyServer jettyServer) {
         WebAppContext webAppContext;
         webAppContext = new WebAppContext();
+        URI parsedResourceUri = ExceptionUtil.wrapCheckedExceptions(() -> new URI(this.resourceUri));
         String warUrlString;
-        String scheme = resourceUri.getScheme();
+        String scheme = parsedResourceUri.getScheme();
         if (scheme == null) {
-            throw new IllegalStateException("URI did not contain scheme: " + resourceUri.toString());
+            throw new IllegalStateException("URI did not contain scheme: " + parsedResourceUri.toString());
         }
-        String path = resourceUri.getSchemeSpecificPart();
+        String path = parsedResourceUri.getSchemeSpecificPart();
         path = (path.startsWith("//")) ? path.substring(2) : path;
         switch (scheme) {
             case "file":
@@ -61,7 +57,7 @@ public class WebAppAddon implements Addon {
                 LOGGER.warn("*** Kjører i DEV-modus, leser webfiler rett fra utviklingskataloger. ***");
                 warUrlString = path;
                 File f = new File(warUrlString);
-                if (! f.exists()) {
+                if (!f.exists()) {
                     throw new IllegalStateException("Could not find file " + path);
                 }
                 break;
@@ -86,7 +82,7 @@ public class WebAppAddon implements Addon {
     }
 
 
-    public WebAppAddon resourceUri(URI resourceUri) {
+    public WebAppAddon resourceUri(String resourceUri) {
         return withResourceUri(resourceUri);
     }
 }

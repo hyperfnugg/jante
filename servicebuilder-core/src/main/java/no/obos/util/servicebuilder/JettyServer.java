@@ -22,7 +22,9 @@ import static no.obos.util.servicebuilder.util.ExceptionUtil.wrapCheckedExceptio
 public class JettyServer {
     public static final String CONFIG_KEY_SERVER_CONTEXT_PATH = "server.contextPath";
     public static final String CONFIG_KEY_SERVER_PORT = "server.port";
-    private static final String DEFAULT_API_PATH_SPEC = "/api/*";
+    public static final String CONFIG_KEY_API_PATHSPEC = "server.apiPath";
+
+    public static final String DEFAULT_API_PATH_SPEC = "api";
     private static final String DEFAULT_BIND_ADDRESS = "0.0.0.0";
 
     @Getter
@@ -85,7 +87,7 @@ public class JettyServer {
 
 
         public static class ConfigurationBuilder {
-            String apiPathSpec = DEFAULT_API_PATH_SPEC;
+            String apiPathSpec = "/" + DEFAULT_API_PATH_SPEC + "/*";
             String bindAddress = DEFAULT_BIND_ADDRESS;
         }
 

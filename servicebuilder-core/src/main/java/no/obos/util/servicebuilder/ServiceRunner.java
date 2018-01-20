@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder;
 
-import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.experimental.Wither;
@@ -9,7 +8,6 @@ import no.obos.util.servicebuilder.config.PropertyMap;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_CONTEXT_PATH;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_PORT;
@@ -90,13 +88,7 @@ public class ServiceRunner {
     }
 
     private static ServiceConfig initializeConfig(ServiceConfig config, final PropertyProvider properties) {
-        ServiceConfig configWithProperties = config.addPropertiesAndApplyToBindings(properties)
-                .withAddons(ImmutableList.copyOf(config
-                        .addons.stream()
-                        .map(it -> it.withProperties(properties))
-                        .collect(toList()
-                        ))
-                );
+        ServiceConfig configWithProperties = config.addPropertiesAndApplyToBindings(properties);
         return ServiceConfigInitializer.finalize(configWithProperties);
     }
 

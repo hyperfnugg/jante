@@ -96,7 +96,15 @@ public class ServiceConfig {
         for (Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> i : hk2ConfigProp) {
             ret = ret.hk2ConfigModule(i.apply(properties));
         }
-        return ret.bind(properties, PropertyProvider.class);
+        return ret.bind(properties, PropertyProvider.class)
+                .withAddons(ImmutableList.copyOf(this
+                        .addons.stream()
+                        .map(it -> it.withProperties(properties))
+                        .collect(toList()
+                        ))
+                )
+                ;
+
     }
 
     @SuppressWarnings("unchecked")
