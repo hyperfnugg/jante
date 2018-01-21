@@ -10,6 +10,8 @@ import no.obos.util.servicebuilder.mq.ActiveMqSender;
 import no.obos.util.servicebuilder.mq.MessageQueueSender;
 import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveMqSenderAddon implements Addon {
     public static final int MAX_QUEUE_ENTRIES = 1000;
@@ -48,14 +50,14 @@ public class ActiveMqSenderAddon implements Addon {
     }
 
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addBinder((binder) -> {
-            if (Strings.isNullOrEmpty(name)) {
-                binder.bind(this.mqSender).to(MessageQueueSender.class);
-            } else {
-                binder.bind(this.mqSender).named(name).to(MessageQueueSender.class);
-            }
-        });
+    public CdiModule getCdiModule() {
+        if (Strings.isNullOrEmpty(name)) {
+            return cdiModule
+                    .bind(this.mqSender, MessageQueueSender.class);
+        } else {
+            return cdiModule
+                    .bindNamed(this.mqSender, MessageQueueSender.class, name);
+        }
     }
 
     @Override

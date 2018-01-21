@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.client.StubGenerator;
@@ -22,6 +22,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import java.net.URI;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.client.ClientGenerator.clientGenerator;
 import static no.obos.util.servicebuilder.client.StubGenerator.stubGenerator;
 import static no.obos.util.servicebuilder.client.TargetGenerator.targetGenerator;
@@ -79,29 +80,32 @@ public class JerseyClientAddon implements Addon {
 
 
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addBinder(binder -> {
-                    String serviceName = serviceDefinition.getName();
-                    if (!Strings.isNullOrEmpty(serviceName)) {
-                        binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
-                        binder.bind(runtime.client).to(Client.class).named(serviceName);
-                        binder.bindFactory(new WebTargetFactory(runtime.targetGenerator)).to(WebTarget.class).named(serviceName);
-                        binder.bind(runtime.stubGenerator).to(StubGenerator.class).named(serviceName);
-                    } else {
-                        binder.bind(this).to(JerseyClientAddon.class);
-                        binder.bind(runtime.client).to(Client.class);
-                        binder.bindFactory(new WebTargetFactory(runtime.targetGenerator)).to(WebTarget.class);
-                        binder.bind(runtime.stubGenerator).to(StubGenerator.class);
-                    }
+    public CdiModule getCdiModule() {
+        CdiModule ret = cdiModule;
 
-                    serviceDefinition.getResources().forEach(clazz -> {
-                                //noinspection unchecked
-                                binder.bindFactory(new StubFactory(clazz, runtime.stubGenerator)).to(clazz).in(Singleton.class);
-                            }
+        String serviceName = serviceDefinition.getName();
+        if (!Strings.isNullOrEmpty(serviceName)) {
+            ret = ret
+                    .bindNamed(this, JerseyClientAddon.class, serviceName)
+                    .bindNamed(runtime.client, Client.class, serviceName)
+                    .bind(binder -> binder.bindFactory(new WebTargetFactory(runtime.targetGenerator)).to(WebTarget.class).named(serviceName))
+                    .bindNamed(runtime.stubGenerator, StubGenerator.class, serviceName);
+        } else {
+            ret = ret
+                    .bind(this, JerseyClientAddon.class)
+                    .bind(runtime.client, Client.class)
+                    .bindFactory(new WebTargetFactory(runtime.targetGenerator), WebTarget.class)
+                    .bind(runtime.stubGenerator, StubGenerator.class);
+        }
 
+        for (Class clazz : serviceDefinition.getResources()) {
+            //noinspection unchecked
+            ret = ret
+                    .bind(binder -> binder
+                            .bindFactory(new StubFactory(clazz, runtime.stubGenerator)).to(clazz).in(Singleton.class)
                     );
-                }
-        );
+        }
+        return ret;
     }
 
     @Override

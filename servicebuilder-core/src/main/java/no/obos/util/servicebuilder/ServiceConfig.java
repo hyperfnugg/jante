@@ -58,6 +58,16 @@ public class ServiceConfig {
                 .collect(toList());
     }
 
+    public ServiceConfig finishConfig() {
+        List<CdiModule> modules = addons.stream().map(Addon::getCdiModule).collect(toList());
+        return withCdiModules(
+                ImmutableList.<CdiModule>builder()
+                        .addAll(modules)
+                        .addAll(this.cdiModules)
+                        .build()
+        );
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends Addon> List<T> addonInstances(Class<T> clazz) {
         return (List<T>) this.addons.stream()

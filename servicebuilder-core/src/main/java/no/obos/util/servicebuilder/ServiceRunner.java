@@ -74,7 +74,7 @@ public class ServiceRunner {
         jerseyConfig
                 .addRegistrators(config.getRegistrators())
                 .addBinders(config.getBindings());
-        config.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
+
         config.addons.forEach(it -> it.addToJettyServer(jettyServer));
 
         jettyServer.start();

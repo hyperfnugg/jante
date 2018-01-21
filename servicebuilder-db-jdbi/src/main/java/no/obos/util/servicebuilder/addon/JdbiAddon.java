@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
@@ -16,6 +16,8 @@ import org.skife.jdbi.v2.DBI;
 
 import javax.sql.DataSource;
 import java.util.Set;
+
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JdbiAddon implements NamedAddon {
@@ -47,21 +49,24 @@ public class JdbiAddon implements NamedAddon {
     }
 
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addBinder(binder -> {
-            if (name != null) {
-                binder.bind(dbi).to(DBI.class).named(name);
-                binder.bind(this).to(JdbiAddon.class).named(name);
-            } else {
-                binder.bind(dbi).to(DBI.class);
-                binder.bind(this).to(JdbiAddon.class);
-            }
+    public CdiModule getCdiModule() {
+        CdiModule ret = cdiModule;
 
-            daos.forEach(clazz ->
-                    binder.bindFactory(new DaoFactory(dbi, clazz)).to(clazz)
-            );
+        if (name != null) {
+            ret = ret
+                    .bindNamed(dbi, DBI.class, name)
+                    .bindNamed(this, JdbiAddon.class, name);
+        } else {
+            ret = ret
+                    .bind(dbi, DBI.class)
+                    .bind(this, JdbiAddon.class);
+        }
 
-        });
+        for (Class clazz : daos) {
+            //noinspection unchecked
+            ret = ret.bindFactory(new DaoFactory(dbi, clazz), clazz);
+        }
+        return ret;
     }
 
     @AllArgsConstructor

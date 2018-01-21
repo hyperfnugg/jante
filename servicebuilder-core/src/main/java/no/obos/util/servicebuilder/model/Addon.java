@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.model;
 
 import com.google.common.collect.ImmutableSet;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 
@@ -30,10 +30,10 @@ public interface Addon {
     }
 
     /**
-     * Modifies JerseyConfig to incorporate addon.
-     * Runs before addToJettyServer
+     * Register any injections
      */
-    default void addToJerseyConfig(JerseyConfig serviceConfig) {
+    default CdiModule getCdiModule() {
+        return CdiModule.cdiModule;
     }
 
     /**
@@ -48,7 +48,9 @@ public interface Addon {
      * <p>
      * WARNING: dependency resolution is not transient. Thus if A->B->C, A.initializeAfter should return (B,C) and B.finalizeafter should return (C).
      */
-    default Set<Class<?>> initializeAfter() {return ImmutableSet.of();}
+    default Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of();
+    }
 
     /**
      * Removes any lingering state upon stopping.

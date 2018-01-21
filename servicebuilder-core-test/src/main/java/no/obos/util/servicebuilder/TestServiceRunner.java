@@ -126,7 +126,6 @@ public class TestServiceRunner implements TestServiceRunnerBase {
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfigWithContext.getRegistrators())
                 .addBinders(serviceConfigWithContext.getBindings());
-        serviceConfigWithContext.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
 
         DeploymentContext context = DeploymentContext.builder(jerseyConfig.getResourceConfig()).build();
         URI uri = UriBuilder.fromUri("http://localhost/").port(0).build();

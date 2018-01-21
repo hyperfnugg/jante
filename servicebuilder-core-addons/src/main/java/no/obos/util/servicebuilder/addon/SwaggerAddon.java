@@ -7,7 +7,7 @@ import io.swagger.jersey.config.JerseyJaxrsConfig;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
@@ -15,6 +15,7 @@ import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.Version;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_API_PATHSPEC;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -44,11 +45,11 @@ public class SwaggerAddon implements Addon {
 
 
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addRegistations(registrator -> registrator
+    public CdiModule getCdiModule() {
+        return cdiModule
                 .register(ApiListingResource.class)
                 .register(SwaggerSerializers.class)
-        );
+                ;
     }
 
     @Override

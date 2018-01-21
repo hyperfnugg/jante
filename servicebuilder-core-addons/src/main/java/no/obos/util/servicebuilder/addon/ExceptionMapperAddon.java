@@ -4,16 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
-import no.obos.util.servicebuilder.exception.GenericExceptionHandler;
-import no.obos.util.servicebuilder.exception.ExternalResourceExceptionMapper;
-import no.obos.util.servicebuilder.exception.HttpProblemExceptionMapper;
-import no.obos.util.servicebuilder.exception.JsonProcessingExceptionMapper;
-import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
-import no.obos.util.servicebuilder.exception.UserMessageExceptionMapper;
-import no.obos.util.servicebuilder.exception.ValidationExceptionMapper;
-import no.obos.util.servicebuilder.exception.WebApplicationExceptionMapper;
+import no.obos.util.servicebuilder.CdiModule;
+import no.obos.util.servicebuilder.exception.*;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
@@ -39,21 +31,19 @@ public class ExceptionMapperAddon implements Addon {
 
 
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addRegistations(registrator -> {
-            registrator.register(JsonProcessingExceptionMapper.class);
-            registrator.register(RuntimeExceptionMapper.class);
-            registrator.register(ValidationExceptionMapper.class);
-            registrator.register(WebApplicationExceptionMapper.class);
-            registrator.register(ConstraintViolationExceptionMapper.class);
-            registrator.register(ExternalResourceExceptionMapper.class);
-            registrator.register(UserMessageExceptionMapper.class);
-            registrator.register(HttpProblemExceptionMapper.class);
-        });
-        jerseyConfig.addBinder(binder -> {
-            binder.bind(this).to(ExceptionMapperAddon.class);
-            binder.bindAsContract(GenericExceptionHandler.class);
-        });
+    public CdiModule getCdiModule() {
+        return CdiModule.cdiModule
+                .register(JsonProcessingExceptionMapper.class)
+                .register(RuntimeExceptionMapper.class)
+                .register(ValidationExceptionMapper.class)
+                .register(WebApplicationExceptionMapper.class)
+                .register(ConstraintViolationExceptionMapper.class)
+                .register(ExternalResourceExceptionMapper.class)
+                .register(UserMessageExceptionMapper.class)
+                .register(HttpProblemExceptionMapper.class)
+                .bind(this, ExceptionMapperAddon.class)
+                .bind(GenericExceptionHandler.class)
+                ;
     }
 
     public ExceptionMapperAddon stacktraceConfig(Class<?> key, boolean value) {

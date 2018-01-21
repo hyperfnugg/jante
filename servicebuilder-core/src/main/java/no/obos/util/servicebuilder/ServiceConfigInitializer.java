@@ -16,7 +16,8 @@ class ServiceConfigInitializer {
         for (Addon addon : unFinalizedAddons) {
             withFinalizedAddons = withFinalizedAddons.addon(addon.initialize(withFinalizedAddons));
         }
-        return withFinalizedAddons;
+        return withFinalizedAddons
+                .finishConfig();
     }
 
     private static List<Addon> sortAddonList(List<Addon> addons) {

@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
@@ -14,6 +14,8 @@ import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
+
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 
 /**
  * Knytter opp en datakilde og binder BasicDatasource og QueryRunner til hk2.
@@ -75,17 +77,15 @@ public class BasicDatasourceAddon implements DataSourceAddon {
     }
 
 
-
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addBinder(binder -> {
-                    if (! Strings.isNullOrEmpty(name)) {
-                        binder.bind(dataSource).named(name).to(DataSource.class);
-                    } else {
-                        binder.bind(dataSource).to(DataSource.class);
-                    }
-                }
-        );
+    public CdiModule getCdiModule() {
+        if (!Strings.isNullOrEmpty(name)) {
+            return cdiModule
+                    .bindNamed(dataSource, DataSource.class, name);
+        } else {
+            return cdiModule
+                    .bind(dataSource, DataSource.class);
+        }
     }
 
     @Override

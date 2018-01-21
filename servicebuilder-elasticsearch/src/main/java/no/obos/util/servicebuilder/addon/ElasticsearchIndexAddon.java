@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.es.Indexer;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.es.ElasticsearchUtil.getClusterName;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -56,11 +57,11 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
     }
 
     @Override
-    public void addToJerseyConfig(JerseyConfig serviceConfig) {
-        serviceConfig.addBinder(binder -> {
-            binder.bind(this).to(ElasticsearchIndexAddon.class).named(indexname);
-            binder.bind(SearcherIndexNameResolver.class).to(JustInTimeInjectionResolver.class);
-        });
+    public CdiModule getCdiModule() {
+        return cdiModule
+                .bindNamed(this, ElasticsearchIndexAddon.class, indexname)
+                .bind(SearcherIndexNameResolver.class, JustInTimeInjectionResolver.class)
+                ;
     }
 
     public static ElasticsearchIndexAddon elasticsearchIndexAddon(String indexName, Class indexedType) {

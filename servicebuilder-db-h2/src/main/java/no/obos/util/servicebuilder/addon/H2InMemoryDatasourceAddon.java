@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 
 /**
  * Knytter opp en datakilde og binder BasicDatasource og QueryRunner til hk2.
@@ -44,7 +45,7 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
-        String databaseName = unitTest ? "" : ! isNullOrEmpty(name) ? name : "test";
+        String databaseName = unitTest ? "" : !isNullOrEmpty(name) ? name : "test";
 
         DataSource dataSource = JdbcConnectionPool.create("jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1", "user", "password");
         scripts.forEach(script -> {
@@ -62,15 +63,14 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
     }
 
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addBinder(binder -> {
-                    if (! isNullOrEmpty(name)) {
-                        binder.bind(dataSource).named(name).to(DataSource.class);
-                    } else {
-                        binder.bind(dataSource).to(DataSource.class);
-                    }
-                }
-        );
+    public CdiModule getCdiModule() {
+        if (!isNullOrEmpty(name)) {
+            return cdiModule
+                    .bindNamed(dataSource, DataSource.class, name);
+        } else {
+            return cdiModule
+                    .bind(dataSource, DataSource.class);
+        }
     }
 
     public H2InMemoryDatasourceAddon script(String script) {

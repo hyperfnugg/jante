@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
@@ -13,6 +13,8 @@ import org.apache.commons.dbutils.QueryRunner;
 
 import javax.sql.DataSource;
 import java.util.Set;
+
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class QueryRunnerAddon implements Addon {
@@ -39,17 +41,18 @@ public class QueryRunnerAddon implements Addon {
     }
 
     @Override
-    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addBinder(binder -> {
-            if (name != null) {
-
-                binder.bind(queryRunner).to(QueryRunner.class).named(name);
-                binder.bindAsContract(QueryRunnerAdapter.class).named(name);
-            } else {
-                binder.bind(queryRunner).to(QueryRunner.class);
-                binder.bindAsContract(QueryRunnerAdapter.class);
-            }
-        });
+    public CdiModule getCdiModule() {
+        if (name != null) {
+            return cdiModule
+                    .bindNamed(queryRunner, QueryRunner.class, name)
+                    .bindNamed(QueryRunnerAdapter.class, name)
+                    ;
+        } else {
+            return cdiModule
+                    .bind(queryRunner, QueryRunner.class)
+                    .bind(QueryRunnerAdapter.class)
+                    ;
+        }
     }
 
 

@@ -17,6 +17,8 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
+
 /**
  * Initializes a MessageQueueListener and routes the messages to a specified handler class.
  * The name is used as a prefix in the AppConfig and to bind the MessageQueueListener.
@@ -75,18 +77,23 @@ public class ActiveMqListenerAddon implements Addon {
     }
 
     @Override
-    public void addToJerseyConfig(JerseyConfig serviceConfig) {
-        serviceConfig.addBinder((binder) -> {
-            String name = StringUtils.trimToNull(this.name);
-            binder.bind(this.mqListener).named(name).to(MessageQueueListener.class);
-            binder.bind(handler).named(name).to(MessageHandler.class);
-            binder.bind(this).named(name).to(ActiveMqListenerAddon.class);
-        });
+    public CdiModule getCdiModule() {
+        CdiModule ret = cdiModule
+                .register(StartListenersFeature.class);
 
-        // Feature is used to start the listeners immediately once dependencies are bound
-        serviceConfig.addRegistations(registrator -> registrator
-                .register(StartListenersFeature.class)
-        );
+        if (Strings.isNullOrEmpty(name)) {
+            return ret
+                    .bind(this.mqListener, MessageQueueListener.class)
+                    .bind(handler, MessageHandler.class)
+                    .bind(this, ActiveMqListenerAddon.class)
+                    ;
+        } else {
+            return ret
+                    .bindNamed(this.mqListener, MessageQueueListener.class, name)
+                    .bindNamed(handler, MessageHandler.class, name)
+                    .bindNamed(this, ActiveMqListenerAddon.class, name)
+                    ;
+        }
     }
 
     @Override
