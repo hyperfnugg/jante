@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import javax.ws.rs.client.ClientBuilder;
 import java.time.LocalDate;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.TestService.testService;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -18,7 +19,7 @@ public class TestServiceRunnerTest {
     private Resource impl = Mockito.mock(Resource.class);
     private TestServiceRunner runner = testServiceRunner(
             serviceConfig(testService)
-                    .bind(impl, Resource.class)
+                    .cdiModule(cdiModule.bind(impl, Resource.class))
     );
 
     @Test
