@@ -28,7 +28,7 @@ public class QueryRunnerAddon implements Addon {
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
-        DataSourceAddon dataSourceAddon = serviceConfig.addonInstanceNamed(DataSourceAddon.class, name);
+        DataSourceAddon dataSourceAddon = serviceConfig.addons.addonInstanceNamed(DataSourceAddon.class, name);
         if (dataSourceAddon == null) {
             if (name == null) {
                 throw new DependenceException(this.getClass(), DataSourceAddon.class);

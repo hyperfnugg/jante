@@ -61,11 +61,11 @@ public class TestChain {
     }
 
     public <T extends Addon> TestChain addon(Class<T> clazz, Consumer<T> fun) {
-        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addonInstance(clazz)));
+        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addons.addonInstance(clazz)));
     }
 
     public <T extends NamedAddon> TestChain addonNamed(String name, Class<T> clazz, Consumer<T> fun) {
-        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addonInstanceNamed(clazz, name)));
+        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addons.addonInstanceNamed(clazz, name)));
     }
 
     public <T> TestChain injectee(Class<T> clazz, Consumer<T> fun) {
@@ -92,7 +92,7 @@ public class TestChain {
         actions.forEach(action -> {
                     action.run(this);
                     serviceRunner.getServiceConfig()
-                            .addonInstances(BetweenTestsAddon.class)
+                            .addons.addonInstances(BetweenTestsAddon.class)
                             .forEach(BetweenTestsAddon::beforeNextTest);
                 }
         );

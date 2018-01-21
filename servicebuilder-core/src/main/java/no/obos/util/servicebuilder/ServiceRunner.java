@@ -75,7 +75,7 @@ public class ServiceRunner {
                 .addRegistrators(config.getRegistrators())
                 .addBinders(config.getBindings());
 
-        config.addons.forEach(it -> it.addToJettyServer(jettyServer));
+        config.addons.addons.forEach(it -> it.addToJettyServer(jettyServer));
 
         jettyServer.start();
         return Runtime.builder()
@@ -94,7 +94,7 @@ public class ServiceRunner {
 
     private static ServiceConfig initializeConfig(ServiceConfig config, final PropertyProvider properties) {
         ServiceConfig configWithProperties = config.applyProperties(properties);
-        return ServiceConfigInitializer.finalize(configWithProperties);
+        return ServiceConfigInitializer.initialize(configWithProperties);
     }
 
 
@@ -111,7 +111,7 @@ public class ServiceRunner {
         }
 
         public void stop() {
-            runner.config.addons.forEach(addon -> {
+            runner.config.addons.addons.forEach(addon -> {
                 try {
                     addon.cleanUp();
                 } catch (RuntimeException ex) {

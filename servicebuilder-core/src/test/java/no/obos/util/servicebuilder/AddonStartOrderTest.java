@@ -56,7 +56,7 @@ public class AddonStartOrderTest {
                 });
 
         //When
-        ServiceConfigInitializer.finalize(config);
+        ServiceConfigInitializer.initialize(config);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2));
     }
@@ -91,7 +91,7 @@ public class AddonStartOrderTest {
                 .addon(new Dependee());
 
         //When
-        ServiceConfigInitializer.finalize(config);
+        ServiceConfigInitializer.initialize(config);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2));
     }
@@ -141,7 +141,7 @@ public class AddonStartOrderTest {
                 .addon(new Immediate());
 
         //When
-        ServiceConfigInitializer.finalize(config);
+        ServiceConfigInitializer.initialize(config);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2, 3));
     }

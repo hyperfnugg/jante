@@ -10,9 +10,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class ServiceConfigInitializer {
-    public static ServiceConfig finalize(ServiceConfig serviceConfig) {
-        List<Addon> unFinalizedAddons = sortAddonList(serviceConfig.addons);
-        ServiceConfig withFinalizedAddons = serviceConfig.withAddons(ImmutableList.of());
+    public static ServiceConfig initialize(ServiceConfig serviceConfig) {
+        List<Addon> unFinalizedAddons = sortAddonList(serviceConfig.addons.addons);
+        ServiceConfig withFinalizedAddons = serviceConfig.withAddons(AddonRepo.addonRepo);
         for (Addon addon : unFinalizedAddons) {
             withFinalizedAddons = withFinalizedAddons.addon(addon.initialize(withFinalizedAddons));
         }

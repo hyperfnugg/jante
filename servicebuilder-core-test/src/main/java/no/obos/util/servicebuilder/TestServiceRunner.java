@@ -66,7 +66,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
         public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
 
         public void stop() {
-            serviceConfig.addons.forEach(addon -> {
+            serviceConfig.addons.addons.forEach(addon -> {
                 try {
                     addon.cleanUp();
                 } catch (RuntimeException ex) {
@@ -121,7 +121,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
     public TestServiceRunner start() {
 
         ServiceConfig serviceConfigwithProps = serviceConfig.applyProperties(properties);
-        ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfigwithProps);
+        ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.initialize(serviceConfigwithProps);
 
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfigWithContext.getRegistrators())
