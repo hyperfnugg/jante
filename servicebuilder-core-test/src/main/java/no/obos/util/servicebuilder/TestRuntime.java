@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import javax.ws.rs.client.WebTarget;
+import javax.xml.ws.Service;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -16,6 +17,8 @@ public interface TestRuntime {
     void callVoid(Consumer<WebTarget> testfun);
 
     ResourceConfig getResourceConfig();
+
+    ServiceConfig.Runtime getConfigRuntime();
 
     void stop();
 }

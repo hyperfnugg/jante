@@ -34,7 +34,7 @@ import static no.obos.util.servicebuilder.client.TargetGenerator.targetGenerator
 public class TestServiceRunner implements TestServiceRunnerBase {
     @Getter
     @Wither(AccessLevel.PRIVATE)
-    public final ServiceConfig serviceConfig;
+    private final ServiceConfig serviceConfig;
     @Wither(AccessLevel.PRIVATE)
     public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
     @Wither(AccessLevel.PRIVATE)
@@ -54,7 +54,8 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
     @AllArgsConstructor
     public static class Runtime implements TestRuntime {
-        public final ServiceConfig serviceConfig;
+        @Getter
+        public final ServiceConfig.Runtime configRuntime;
         public final JerseyConfig jerseyConfig;
         public final TestContainer testContainer;
         public final ClientConfig clientConfig;
@@ -66,7 +67,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
         public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
 
         public void stop() {
-            serviceConfig.addons.addons.forEach(addon -> {
+            configRuntime.addons.addons.forEach(addon -> {
                 try {
                     addon.cleanUp();
                 } catch (RuntimeException ex) {
@@ -120,11 +121,11 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
     public TestServiceRunner start() {
 
-        ServiceConfig serviceConfigWithContext = serviceConfig.applyProperties(properties);
+        ServiceConfig.Runtime configRuntime = serviceConfig.applyProperties(properties);
 
-        JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
-                .addRegistrators(serviceConfigWithContext.getRegistrators())
-                .addBinders(serviceConfigWithContext.getBindings());
+        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition)
+                .addRegistrators(configRuntime.getRegistrators())
+                .addBinders(configRuntime.getBindings());
 
         DeploymentContext context = DeploymentContext.builder(jerseyConfig.getResourceConfig()).build();
         URI uri = UriBuilder.fromUri("http://localhost/").port(0).build();
@@ -132,13 +133,13 @@ public class TestServiceRunner implements TestServiceRunnerBase {
         testContainer.start();
         ClientConfig clientConfig = testContainer.getClientConfig();
         ClientGenerator generator = clientConfigurator.apply(
-                clientGenerator.serviceDefinition(serviceConfigWithContext.serviceDefinition)
+                clientGenerator.serviceDefinition(configRuntime.serviceDefinition)
                         .clientConfigBase(clientConfig)
         );
         Client client = generator.generate();
 
-        Runtime runtime = new Runtime(serviceConfigWithContext, jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator);
-        return withServiceConfig(serviceConfigWithContext).withRuntime(runtime);
+        Runtime runtime = new Runtime(configRuntime, jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator);
+        return withRuntime(runtime);
     }
 
     public TestServiceRunner withStartedRuntime() {

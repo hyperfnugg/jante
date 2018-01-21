@@ -17,7 +17,7 @@ import static no.obos.util.servicebuilder.config.PropertyMap.propertyMap;
 @AllArgsConstructor
 public class ServiceRunner {
     @Wither(PRIVATE)
-    final ServiceConfig config;
+    private final ServiceConfig config;
     @Wither(PRIVATE)
     final PropertyProvider properties;
     @Wither(PRIVATE)
@@ -51,10 +51,8 @@ public class ServiceRunner {
 
         String runtimeContextPath = properties.getWithFallback(CONFIG_KEY_SERVER_CONTEXT_PATH, contextPath);
 
-        ServiceConfig runtimeConfig = this.config.applyProperties(runtimeProperties);
 
         return this
-                .withConfig(runtimeConfig)
                 .withProperties(runtimeProperties)
                 .withPort(runtimePort)
                 .withContextPath(runtimeContextPath)
@@ -62,7 +60,10 @@ public class ServiceRunner {
     }
 
     private Runtime startServer() {
-        JerseyConfig jerseyConfig = new JerseyConfig(config.serviceDefinition);
+
+        ServiceConfig.Runtime configRuntime = this.config.applyProperties(properties);
+
+        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition);
 
         JettyServer.Configuration jettyConfig = JettyServer.Configuration.builder()
                 .bindPort(port)
@@ -72,13 +73,14 @@ public class ServiceRunner {
         JettyServer jettyServer = new JettyServer(jettyConfig, jerseyConfig);
 
         jerseyConfig
-                .addRegistrators(config.getRegistrators())
-                .addBinders(config.getBindings());
+                .addRegistrators(configRuntime.getRegistrators())
+                .addBinders(configRuntime.getBindings());
 
-        config.addons.addons.forEach(it -> it.addToJettyServer(jettyServer));
+        configRuntime.addons.addons.forEach(it -> it.addToJettyServer(jettyServer));
 
         jettyServer.start();
         return Runtime.builder()
+                .configRuntime(configRuntime)
                 .jerseyConfig(jerseyConfig)
                 .jettyConfig(jettyConfig)
                 .jettyServer(jettyServer)
@@ -96,6 +98,7 @@ public class ServiceRunner {
     @Builder
     @AllArgsConstructor(access = PRIVATE)
     public static class Runtime {
+        public final ServiceConfig.Runtime configRuntime;
         public final JettyServer jettyServer;
         public final JerseyConfig jerseyConfig;
         public JettyServer.Configuration jettyConfig;
@@ -106,7 +109,7 @@ public class ServiceRunner {
         }
 
         public void stop() {
-            runner.config.addons.addons.forEach(addon -> {
+            configRuntime.addons.addons.forEach(addon -> {
                 try {
                     addon.cleanUp();
                 } catch (RuntimeException ex) {

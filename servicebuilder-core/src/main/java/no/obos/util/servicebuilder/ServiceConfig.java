@@ -34,7 +34,7 @@ public class ServiceConfig {
     }
 
 
-    ServiceConfig applyProperties(PropertyProvider properties) {
+    Runtime applyProperties(PropertyProvider properties) {
         ServiceConfig withProps = this
                 .cdiModule(cdiModule
                         .bind(properties, PropertyProvider.class)
@@ -57,26 +57,13 @@ public class ServiceConfig {
         List<CdiModule> modules = withFinalizedAddons.addons.addons.stream()
                 .map(Addon::getCdiModule)
                 .collect(toList());
-        return withFinalizedAddons.withCdiModules(
+
+        return new Runtime(withFinalizedAddons.serviceDefinition, withFinalizedAddons.addons,
                 ImmutableList.<CdiModule>builder()
                         .addAll(modules)
                         .addAll(withFinalizedAddons.cdiModules)
                         .build()
         );
-    }
-
-    public List<JerseyConfig.Registrator> getRegistrators() {
-        return cdiModules.stream()
-                .map(it -> it.registrators.stream())
-                .flatMap(Function.identity())
-                .collect(toList());
-    }
-
-    public Iterable<JerseyConfig.Binder> getBindings() {
-        return cdiModules.stream()
-                .map(it -> it.binders.stream())
-                .flatMap(Function.identity())
-                .collect(toList());
     }
 
 
@@ -127,7 +114,22 @@ public class ServiceConfig {
     public static class Runtime {
         public final ServiceDefinition serviceDefinition;
         public final AddonRepo addons;
-        private final ImmutableList<CdiModule> cdiModules;
+        public final ImmutableList<CdiModule> cdiModules;
+
+
+        public List<JerseyConfig.Registrator> getRegistrators() {
+            return cdiModules.stream()
+                    .map(it -> it.registrators.stream())
+                    .flatMap(Function.identity())
+                    .collect(toList());
+        }
+
+        public Iterable<JerseyConfig.Binder> getBindings() {
+            return cdiModules.stream()
+                    .map(it -> it.binders.stream())
+                    .flatMap(Function.identity())
+                    .collect(toList());
+        }
     }
 
 }

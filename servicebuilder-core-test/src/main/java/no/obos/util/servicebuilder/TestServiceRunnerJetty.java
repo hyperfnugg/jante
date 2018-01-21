@@ -92,6 +92,11 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
         public ResourceConfig getResourceConfig() {
             return runnerRuntime.jerseyConfig.resourceConfig;
         }
+
+        @Override
+        public ServiceConfig.Runtime getConfigRuntime() {
+            return runnerRuntime.configRuntime;
+        }
     }
 
 
@@ -106,7 +111,7 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
         uri = UriBuilder.fromUri(uri).host("localhost").build();
 
         ClientGenerator generator = clientConfigurator.apply(
-                clientGenerator.serviceDefinition(runnerRuntime.runner.config.serviceDefinition)
+                clientGenerator.serviceDefinition(runnerRuntime.configRuntime.serviceDefinition)
         );
         Client client = generator.generate();
         StubGenerator stubGenerator = stubConfigurator.apply(stubGenerator(client, UriBuilder.fromUri(uri).build()));

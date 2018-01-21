@@ -61,11 +61,11 @@ public class TestChain {
     }
 
     public <T extends Addon> TestChain addon(Class<T> clazz, Consumer<T> fun) {
-        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addons.addonInstance(clazz)));
+        return action(testChain -> fun.accept(testChain.serviceRunner.getRuntime().getConfigRuntime().addons.addonInstance(clazz)));
     }
 
     public <T extends NamedAddon> TestChain addonNamed(String name, Class<T> clazz, Consumer<T> fun) {
-        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addons.addonInstanceNamed(clazz, name)));
+        return action(testChain -> fun.accept(testChain.serviceRunner.getRuntime().getConfigRuntime().addons.addonInstanceNamed(clazz, name)));
     }
 
     public <T> TestChain injectee(Class<T> clazz, Consumer<T> fun) {
@@ -76,8 +76,8 @@ public class TestChain {
         return action(testChain -> fun.accept(testChain.serviceLocator.get().getService(typeLiteral.getType())));
     }
 
-    public TestChain serviceConfig(Consumer<ServiceConfig> fun) {
-        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig()));
+    public TestChain configRuntime(Consumer<ServiceConfig.Runtime> fun) {
+        return action(testChain -> fun.accept(testChain.serviceRunner.getRuntime().getConfigRuntime()));
     }
 
     public TestChain serviceLocator(Consumer<ServiceLocator> fun) {
@@ -91,7 +91,7 @@ public class TestChain {
     private void doActions() {
         actions.forEach(action -> {
                     action.run(this);
-                    serviceRunner.getServiceConfig()
+                    serviceRunner.getRuntime().getConfigRuntime()
                             .addons.addonInstances(BetweenTestsAddon.class)
                             .forEach(BetweenTestsAddon::beforeNextTest);
                 }
