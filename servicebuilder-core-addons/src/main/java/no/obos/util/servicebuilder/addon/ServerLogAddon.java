@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.CdiModule;
 import no.obos.util.servicebuilder.log.ServerLogFilter;
 import no.obos.util.servicebuilder.log.ServerLogger;
 import no.obos.util.servicebuilder.log.model.LogParams;
@@ -12,6 +12,8 @@ import no.obos.util.servicebuilder.model.Addon;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import java.util.function.Predicate;
+
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServerLogAddon implements Addon {
@@ -31,14 +33,12 @@ public class ServerLogAddon implements Addon {
     public static final ServerLogAddon serverLogAddon = new ServerLogAddon(LogParams.defaults);
 
 
-
-    public void addToJerseyConfig(JerseyConfig serviceConfig) {
+    @Override
+    public CdiModule getCdiModule() {
         ServerLogger serverLogger = new ServerLogger(fastTrackFilters, logParams);
-        serviceConfig.addBinder(binder -> binder.bind(serverLogger).to(ServerLogger.class));
-        serviceConfig.addRegistations(registrator ->
-                registrator
-                        .register(ServerLogFilter.class)
-        );
+        return cdiModule
+                .bind(serverLogger, ServerLogger.class)
+                .register(ServerLogFilter.class);
     }
 
     public ServerLogAddon logParams(LogParams logParams) {
