@@ -51,7 +51,7 @@ public class ServiceRunner {
 
         String runtimeContextPath = properties.getWithFallback(CONFIG_KEY_SERVER_CONTEXT_PATH, contextPath);
 
-        ServiceConfig runtimeConfig = initializeConfig(this.config, runtimeProperties);
+        ServiceConfig runtimeConfig = this.config.applyProperties(runtimeProperties);
 
         return this
                 .withConfig(runtimeConfig)
@@ -90,11 +90,6 @@ public class ServiceRunner {
     private void genericInitialization() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-    }
-
-    private static ServiceConfig initializeConfig(ServiceConfig config, final PropertyProvider properties) {
-        ServiceConfig configWithProperties = config.applyProperties(properties);
-        return ServiceConfigInitializer.initialize(configWithProperties);
     }
 
 

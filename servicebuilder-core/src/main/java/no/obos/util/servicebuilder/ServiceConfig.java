@@ -1,6 +1,7 @@
 package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
@@ -10,7 +11,10 @@ import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static no.obos.util.servicebuilder.CdiModule.cdiModule;
@@ -31,7 +35,7 @@ public class ServiceConfig {
 
 
     ServiceConfig applyProperties(PropertyProvider properties) {
-        return this
+        ServiceConfig withProps = this
                 .cdiModule(cdiModule
                         .bind(properties, PropertyProvider.class)
                 )
@@ -44,6 +48,21 @@ public class ServiceConfig {
                         )
                 );
 
+        List<Addon> unFinalizedAddons = sortAddonList(withProps.addons.addons);
+        ServiceConfig withFinalizedAddons = withProps.withAddons(AddonRepo.addonRepo);
+        for (Addon addon : unFinalizedAddons) {
+            withFinalizedAddons = withFinalizedAddons.addon(addon.initialize(withFinalizedAddons));
+        }
+
+        List<CdiModule> modules = withFinalizedAddons.addons.addons.stream()
+                .map(Addon::getCdiModule)
+                .collect(toList());
+        return withFinalizedAddons.withCdiModules(
+                ImmutableList.<CdiModule>builder()
+                        .addAll(modules)
+                        .addAll(withFinalizedAddons.cdiModules)
+                        .build()
+        );
     }
 
     public List<JerseyConfig.Registrator> getRegistrators() {
@@ -60,16 +79,27 @@ public class ServiceConfig {
                 .collect(toList());
     }
 
-    public ServiceConfig finishConfig() {
-        List<CdiModule> modules = addons.addons.stream()
-                .map(Addon::getCdiModule)
-                .collect(toList());
-        return withCdiModules(
-                ImmutableList.<CdiModule>builder()
-                        .addAll(modules)
-                        .addAll(this.cdiModules)
-                        .build()
-        );
+
+
+    private static List<Addon> sortAddonList(List<Addon> addons) {
+        List<Addon> unSortedList = Lists.newArrayList(addons);
+        List<Addon> sortedList = Lists.newArrayList();
+        while (unSortedList.size() > 0) {
+            List<Addon> addonsWithNoDependencies = unSortedList.stream().filter(possiblyDependent -> {
+                Set<Class<?>> dependentOnSet = possiblyDependent.initializeAfter();
+                return dependentOnSet.stream().noneMatch(hasDependenciesInList(unSortedList));
+            }).collect(Collectors.toList());
+            sortedList.addAll(addonsWithNoDependencies);
+            unSortedList.removeAll(addonsWithNoDependencies);
+            if (addonsWithNoDependencies.isEmpty()) {
+                throw new RuntimeException("Dependency loop in addons: " + unSortedList);
+            }
+        }
+        return sortedList;
+    }
+
+    private static Predicate<Class<?>> hasDependenciesInList(List<Addon> unSortedList) {
+        return dependentOn -> unSortedList.stream().anyMatch(dependentOn::isInstance);
     }
 
 
@@ -91,6 +121,13 @@ public class ServiceConfig {
 
     public ServiceConfig cdiModule(CdiModule cdiModule) {
         return withCdiModules(GuavaHelper.plus(this.cdiModules, cdiModule));
+    }
+
+    @AllArgsConstructor
+    public static class Runtime {
+        public final ServiceDefinition serviceDefinition;
+        public final AddonRepo addons;
+        private final ImmutableList<CdiModule> cdiModules;
     }
 
 }

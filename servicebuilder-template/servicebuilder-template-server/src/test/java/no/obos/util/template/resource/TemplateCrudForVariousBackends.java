@@ -39,7 +39,7 @@ public class TemplateCrudForVariousBackends {
         return Lists.newArrayList(
                 commonConfig
                         .cdiModule(cdiModule
-                                .bind(new TemplateControllerInMemory(), TemplateController.class)
+                                .bindSingleton(TemplateControllerInMemory.class, TemplateController.class)
                         )
                 , mainConfig
                 , commonConfig

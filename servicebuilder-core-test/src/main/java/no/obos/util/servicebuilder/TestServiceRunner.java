@@ -120,8 +120,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
     public TestServiceRunner start() {
 
-        ServiceConfig serviceConfigwithProps = serviceConfig.applyProperties(properties);
-        ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.initialize(serviceConfigwithProps);
+        ServiceConfig serviceConfigWithContext = serviceConfig.applyProperties(properties);
 
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfigWithContext.getRegistrators())

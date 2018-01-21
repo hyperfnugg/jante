@@ -10,35 +10,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class ServiceConfigInitializer {
-    public static ServiceConfig initialize(ServiceConfig serviceConfig) {
-        List<Addon> unFinalizedAddons = sortAddonList(serviceConfig.addons.addons);
-        ServiceConfig withFinalizedAddons = serviceConfig.withAddons(AddonRepo.addonRepo);
-        for (Addon addon : unFinalizedAddons) {
-            withFinalizedAddons = withFinalizedAddons.addon(addon.initialize(withFinalizedAddons));
-        }
-        return withFinalizedAddons
-                .finishConfig();
-    }
 
-    private static List<Addon> sortAddonList(List<Addon> addons) {
-        List<Addon> unSortedList = Lists.newArrayList(addons);
-        List<Addon> sortedList = Lists.newArrayList();
-        while (unSortedList.size() > 0) {
-            List<Addon> addonsWithNoDependencies = unSortedList.stream().filter(possiblyDependent -> {
-                Set<Class<?>> dependentOnSet = possiblyDependent.initializeAfter();
-                return dependentOnSet.stream().noneMatch(hasDependenciesInList(unSortedList));
-            }).collect(Collectors.toList());
-            sortedList.addAll(addonsWithNoDependencies);
-            unSortedList.removeAll(addonsWithNoDependencies);
-            if (addonsWithNoDependencies.isEmpty()) {
-                throw new RuntimeException("Dependency loop in addons: " + unSortedList);
-            }
-        }
-        return sortedList;
-    }
-
-    private static Predicate<Class<?>> hasDependenciesInList(List<Addon> unSortedList) {
-        return dependentOn -> unSortedList.stream().anyMatch(dependentOn::isInstance);
-    }
 
 }

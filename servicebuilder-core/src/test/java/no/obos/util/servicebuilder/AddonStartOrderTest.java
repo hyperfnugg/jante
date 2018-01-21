@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import no.obos.util.servicebuilder.config.PropertyMap;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.model.Version;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
+import static no.obos.util.servicebuilder.config.PropertyMap.propertyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AddonStartOrderTest {
@@ -56,7 +58,7 @@ public class AddonStartOrderTest {
                 });
 
         //When
-        ServiceConfigInitializer.initialize(config);
+        config.applyProperties(propertyMap);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2));
     }
@@ -91,7 +93,7 @@ public class AddonStartOrderTest {
                 .addon(new Dependee());
 
         //When
-        ServiceConfigInitializer.initialize(config);
+        config.applyProperties(propertyMap);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2));
     }
@@ -141,7 +143,7 @@ public class AddonStartOrderTest {
                 .addon(new Immediate());
 
         //When
-        ServiceConfigInitializer.initialize(config);
+        config.applyProperties(propertyMap);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2, 3));
     }
