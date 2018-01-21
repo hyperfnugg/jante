@@ -103,7 +103,7 @@ public class ActiveMqListenerAddon implements Addon {
     }
 
     @Override
-    public ActiveMqListenerAddon initialize(ServiceConfig serviceConfig) {
+    public ActiveMqListenerAddon initialize(ServiceConfig.Runtime config) {
         return this.withMqListener(new ActiveMqListener(url, user, password, queueInput, queueError));
     }
 

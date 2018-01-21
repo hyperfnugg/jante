@@ -25,7 +25,7 @@ public interface Addon {
      * <p>
      * Runs before addToJerseyConfig and addToJettyServer
      */
-    default Addon initialize(ServiceConfig serviceConfig) {
+    default Addon initialize(ServiceConfig.Runtime config) {
         return this;
     }
 

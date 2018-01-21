@@ -47,7 +47,7 @@ public class ElasticsearchMockAddon implements ElasticsearchAddon {
     public final boolean unitTest;
 
     @Override
-    public ElasticsearchMockAddon initialize(ServiceConfig serviceConfig) {
+    public ElasticsearchMockAddon initialize(ServiceConfig.Runtime config) {
         Path path;
         Node node;
 

@@ -44,7 +44,7 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
     public static H2InMemoryDatasourceAddon h2InMemoryDatasourceAddon = new H2InMemoryDatasourceAddon(null, null, true, ImmutableList.of());
 
     @Override
-    public Addon initialize(ServiceConfig serviceConfig) {
+    public Addon initialize(ServiceConfig.Runtime config) {
         String databaseName = unitTest ? "" : !isNullOrEmpty(name) ? name : "test";
 
         DataSource dataSource = JdbcConnectionPool.create("jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1", "user", "password");

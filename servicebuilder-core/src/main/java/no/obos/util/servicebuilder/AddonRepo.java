@@ -1,9 +1,7 @@
 package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.addon.NamedAddon;
 import no.obos.util.servicebuilder.model.Addon;
 
@@ -11,12 +9,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class AddonRepo {
-    @Wither(AccessLevel.PACKAGE)
     final ImmutableList<Addon> addons;
-
-    public final static AddonRepo addonRepo = new AddonRepo(ImmutableList.of());
 
     @SuppressWarnings("unchecked")
     public <T extends Addon> List<T> addonInstances(Class<T> clazz) {

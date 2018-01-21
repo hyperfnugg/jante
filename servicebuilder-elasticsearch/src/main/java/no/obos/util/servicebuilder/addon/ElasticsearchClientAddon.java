@@ -45,7 +45,7 @@ public class ElasticsearchClientAddon implements ElasticsearchAddon {
 
 
     @Override
-    public ElasticsearchClientAddon initialize(ServiceConfig serviceConfig) {
+    public ElasticsearchClientAddon initialize(ServiceConfig.Runtime config) {
 
         Settings settings = Settings.builder()
                 .put("cluster.name", clustername)
@@ -61,7 +61,7 @@ public class ElasticsearchClientAddon implements ElasticsearchAddon {
 
         return this.withClient(new PreBuiltTransportClient(settings)
                 .addTransportAddress(new TransportAddress(address, coordinatorPort))
-                );
+        );
     }
 
 

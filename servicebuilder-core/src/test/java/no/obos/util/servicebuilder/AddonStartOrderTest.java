@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import no.obos.util.servicebuilder.config.PropertyMap;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.model.Version;
@@ -44,14 +43,14 @@ public class AddonStartOrderTest {
         ServiceConfig config = serviceConfig(serviceDefinition)
                 .addon(new Addon() {
                     @Override
-                    public Addon initialize(ServiceConfig serviceConfig) {
+                    public Addon initialize(ServiceConfig.Runtime config) {
                         startOrder.add(1);
                         return this;
                     }
                 })
                 .addon(new Addon() {
                     @Override
-                    public Addon initialize(ServiceConfig serviceConfig) {
+                    public Addon initialize(ServiceConfig.Runtime config) {
                         startOrder.add(2);
                         return this;
                     }
@@ -70,14 +69,14 @@ public class AddonStartOrderTest {
 
         class Dependee implements Addon {
             @Override
-            public Addon initialize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig.Runtime config) {
                 startOrder.add(1);
                 return this;
             }
         }
         class Dependent implements Addon {
             @Override
-            public Addon initialize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig.Runtime config) {
                 startOrder.add(2);
                 return this;
             }
@@ -106,14 +105,14 @@ public class AddonStartOrderTest {
 
         class Dependee implements Addon {
             @Override
-            public Addon initialize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig.Runtime config) {
                 startOrder.add(1);
                 return this;
             }
         }
         class Immediate implements Addon {
             @Override
-            public Addon initialize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig.Runtime config) {
                 startOrder.add(2);
                 return this;
             }
@@ -126,7 +125,7 @@ public class AddonStartOrderTest {
 
         class Dependent implements Addon {
             @Override
-            public Addon initialize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig.Runtime config) {
                 startOrder.add(3);
                 return this;
             }

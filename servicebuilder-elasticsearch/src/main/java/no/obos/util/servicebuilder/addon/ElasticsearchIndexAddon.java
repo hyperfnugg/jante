@@ -70,8 +70,8 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
     }
 
     @Override
-    public ElasticsearchIndexAddon initialize(ServiceConfig serviceConfig) {
-        ElasticsearchAddon elasticsearchAddon = serviceConfig.addons.addonInstance(ElasticsearchAddon.class);
+    public ElasticsearchIndexAddon initialize(ServiceConfig.Runtime config) {
+        ElasticsearchAddon elasticsearchAddon = config.addons.addonInstance(ElasticsearchAddon.class);
         if (elasticsearchAddon == null) {
             throw new DependenceException(this.getClass(), ElasticsearchAddon.class, " no ElasticSearchAddon found");
         }

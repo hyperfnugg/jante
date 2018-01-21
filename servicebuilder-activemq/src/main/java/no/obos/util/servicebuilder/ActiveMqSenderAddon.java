@@ -45,7 +45,7 @@ public class ActiveMqSenderAddon implements Addon {
 
 
     @Override
-    public ActiveMqSenderAddon initialize(ServiceConfig serviceConfig) {
+    public ActiveMqSenderAddon initialize(ServiceConfig.Runtime config) {
         return this.withMqSender(new ActiveMqSender(url, user, password, queue));
     }
 

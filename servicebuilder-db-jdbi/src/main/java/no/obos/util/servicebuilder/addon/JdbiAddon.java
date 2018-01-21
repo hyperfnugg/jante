@@ -34,8 +34,8 @@ public class JdbiAddon implements NamedAddon {
             new JdbiAddon(null, null, ImmutableList.of());
 
     @Override
-    public Addon initialize(ServiceConfig serviceConfig) {
-        DataSourceAddon dataSourceAddon = serviceConfig.addons.addonInstanceNamed(DataSourceAddon.class, name);
+    public Addon initialize(ServiceConfig.Runtime config) {
+        DataSourceAddon dataSourceAddon = config.addons.addonInstanceNamed(DataSourceAddon.class, name);
         if (dataSourceAddon == null) {
             if (name == null) {
                 throw new DependenceException(this.getClass(), DataSourceAddon.class, " no unnamed datasourceaddon found");

@@ -38,9 +38,10 @@ public class SwaggerAddon implements Addon {
                 .apiPath(properties.requireWithFallback(CONFIG_KEY_API_PATHSPEC, apiPath));
     }
 
-    public Addon initialize(ServiceConfig serviceConfig) {
+    @Override
+    public Addon initialize(ServiceConfig.Runtime config) {
         return this
-                .apiVersion(serviceConfig.serviceDefinition.getVersion());
+                .apiVersion(config.serviceDefinition.getVersion());
     }
 
 
