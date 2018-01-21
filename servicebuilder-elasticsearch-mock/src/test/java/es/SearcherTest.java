@@ -25,6 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -71,7 +72,9 @@ public class SearcherTest {
                         .addon(elasticsearchMockAddon)
                         .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class))
                         .addon(elasticsearchIndexAddon("anotherIndex", String.class))
-                        .bind(ResourceImpl.class, Resource.class);
+                        .cdiModule(cdiModule
+                                .bind(ResourceImpl.class, Resource.class)
+                        );
         runner = testServiceRunner(serviceConfig);
     }
 

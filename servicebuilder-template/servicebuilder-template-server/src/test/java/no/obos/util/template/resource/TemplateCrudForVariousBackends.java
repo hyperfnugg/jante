@@ -16,9 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import javax.inject.Singleton;
 import java.util.Collection;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static no.obos.util.template.Main.commonConfig;
 import static no.obos.util.template.Main.mainConfig;
@@ -38,10 +38,14 @@ public class TemplateCrudForVariousBackends {
     public static Collection<ServiceConfig> data() {
         return Lists.newArrayList(
                 commonConfig
-                        .bind(binder -> binder.bind(TemplateControllerInMemory.class).to(TemplateController.class).in(Singleton.class))
+                        .cdiModule(cdiModule
+                                .bind(new TemplateControllerInMemory(), TemplateController.class)
+                        )
                 , mainConfig
                 , commonConfig
-                        .bind(binder -> binder.bind(TemplateControllerElasticsearch.class).to(TemplateController.class).in(Singleton.class))
+                        .cdiModule(cdiModule
+                                .bindSingleton(TemplateControllerElasticsearch.class, TemplateController.class)
+                        )
                         .addon(Addons.elasticsearchMock())
                         .addon(Addons.elasticsearchIndex("templateIndex", Template.class)
                                 .doIndexing(true)

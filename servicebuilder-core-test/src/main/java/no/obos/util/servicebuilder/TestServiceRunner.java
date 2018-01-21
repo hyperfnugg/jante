@@ -120,12 +120,12 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
     public TestServiceRunner start() {
 
-        ServiceConfig serviceConfigwithProps = serviceConfig.addPropertiesAndApplyToBindings(properties);
+        ServiceConfig serviceConfigwithProps = serviceConfig.applyProperties(properties);
         ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfigwithProps);
 
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
-                .addRegistrators(serviceConfigWithContext.registrators)
-                .addBinders(serviceConfigWithContext.binders);
+                .addRegistrators(serviceConfigWithContext.getRegistrators())
+                .addBinders(serviceConfigWithContext.getBindings());
         serviceConfigWithContext.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
 
         DeploymentContext context = DeploymentContext.builder(jerseyConfig.getResourceConfig()).build();

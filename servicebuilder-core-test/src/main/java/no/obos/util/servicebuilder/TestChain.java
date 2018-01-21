@@ -17,6 +17,8 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import java.util.function.Consumer;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestChain {
     @Wither(AccessLevel.PRIVATE)
@@ -42,7 +44,9 @@ public class TestChain {
         };
         this.serviceRunner = serviceRunner
                 .serviceConfig(serviceRunner.getServiceConfig()
-                        .registerInstance(lifecycleListener)
+                        .cdiModule(cdiModule
+                                .registerInstance(lifecycleListener)
+                        )
                 );
     }
 

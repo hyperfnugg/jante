@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -35,7 +36,9 @@ public class QueryRunnerAddonTest {
     @Test
     public void runsWithQueryRunner() {
         ServiceConfig serviceConfig = this.serviceConfig
-                .bind(ApiImpl.class, Api.class);
+                .cdiModule(cdiModule
+                        .bind(ApiImpl.class, Api.class)
+                );
         Integer actual = testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);
         assertThat(actual).isEqualTo(303);
     }
@@ -43,7 +46,9 @@ public class QueryRunnerAddonTest {
     @Test
     public void runsWithQueryRunnerAdapter() {
         ServiceConfig serviceConfig = this.serviceConfig
-                .bind(ApiImplAdapter.class, Api.class);
+                .cdiModule(cdiModule
+                        .bind(ApiImplAdapter.class, Api.class)
+                );
         Integer actual = testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);
         assertThat(actual).isEqualTo(303);
     }

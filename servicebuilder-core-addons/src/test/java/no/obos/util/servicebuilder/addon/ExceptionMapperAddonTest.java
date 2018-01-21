@@ -17,6 +17,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.TestService.testService;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -29,7 +30,9 @@ import static org.mockito.Mockito.when;
 public class ExceptionMapperAddonTest {
     TestService.Resource resource = mock(TestService.Resource.class);
     ServiceConfig config = serviceConfig(testService)
-            .bind(resource, TestService.Resource.class)
+            .cdiModule(cdiModule
+                    .bind(resource, TestService.Resource.class)
+            )
             .addon(exceptionMapperAddon.stacktraceConfig(RuntimeException.class, false));
     TestServiceRunner runner = testServiceRunner(config);
 

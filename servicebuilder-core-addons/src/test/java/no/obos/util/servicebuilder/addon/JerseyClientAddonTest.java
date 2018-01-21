@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.time.LocalDate;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestService.Payload;
@@ -47,12 +48,16 @@ public class JerseyClientAddonTest {
 
     TestServiceRunner nestedRunner = testServiceRunner(
             serviceConfig(testService)
-                    .bind(nestedResourceMock, Resource.class)
+                    .cdiModule(cdiModule
+                            .bind(nestedResourceMock, Resource.class)
+                    )
     );
 
     ServiceConfig outerServiceConfig = serviceConfig(stubServiceDefinition("outer", OuterResource.class))
             .addon(exceptionMapperAddon)
-            .bind(OuterResourceImpl.class, OuterResource.class);
+            .cdiModule(cdiModule
+                    .bind(OuterResourceImpl.class, OuterResource.class)
+            );
 
 
     @Api

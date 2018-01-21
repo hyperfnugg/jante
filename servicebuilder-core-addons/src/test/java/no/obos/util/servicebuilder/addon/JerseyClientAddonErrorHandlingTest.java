@@ -13,6 +13,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import java.net.URI;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.TestService.testService;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -32,7 +33,9 @@ public class JerseyClientAddonErrorHandlingTest {
                     .addon(exceptionMapperAddon
                             .stacktraceConfig(RuntimeException.class, false)
                     )
-                    .bind(resource, Resource.class)
+                    .cdiModule(cdiModule
+                            .bind(resource, Resource.class)
+                    )
     );
 
 

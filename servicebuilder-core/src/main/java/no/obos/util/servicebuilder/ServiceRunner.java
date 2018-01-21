@@ -72,8 +72,8 @@ public class ServiceRunner {
         JettyServer jettyServer = new JettyServer(jettyConfig, jerseyConfig);
 
         jerseyConfig
-                .addRegistrators(config.registrators)
-                .addBinders(config.binders);
+                .addRegistrators(config.getRegistrators())
+                .addBinders(config.getBindings());
         config.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
         config.addons.forEach(it -> it.addToJettyServer(jettyServer));
 
@@ -93,7 +93,7 @@ public class ServiceRunner {
     }
 
     private static ServiceConfig initializeConfig(ServiceConfig config, final PropertyProvider properties) {
-        ServiceConfig configWithProperties = config.addPropertiesAndApplyToBindings(properties);
+        ServiceConfig configWithProperties = config.applyProperties(properties);
         return ServiceConfigInitializer.finalize(configWithProperties);
     }
 

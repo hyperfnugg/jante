@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -74,7 +75,9 @@ public class IndexerTest {
                         .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class)
                                 .doIndexing(true)
                         )
-                        .bind(ResourceImpl.class, Resource.class);
+                        .cdiModule(cdiModule
+                                .bind(ResourceImpl.class, Resource.class)
+                        );
         runner = testServiceRunner(serviceConfig);
     }
 

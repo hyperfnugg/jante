@@ -4,107 +4,58 @@ import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.JerseyConfig.Binder;
-import no.obos.util.servicebuilder.JerseyConfig.Registrator;
 import no.obos.util.servicebuilder.addon.NamedAddon;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.GuavaHelper;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceConfig {
     @Wither(AccessLevel.PACKAGE)
     final ImmutableList<Addon> addons;
     public final ServiceDefinition serviceDefinition;
-    @Wither(AccessLevel.PRIVATE)
-    final ImmutableList<Binder> binders;
-    @Wither(AccessLevel.PRIVATE)
-    final ImmutableList<Registrator> registrators;
-    @Wither(AccessLevel.PRIVATE)
-    final ImmutableList<Function<PropertyProvider, JerseyConfig.Hk2ConfigModule>> hk2ConfigProp;
+    @Wither(AccessLevel.PACKAGE)
+    private final ImmutableList<CdiModule> cdiModules;
 
 
     public static ServiceConfig serviceConfig(ServiceDefinition serviceDefinition) {
-        return new ServiceConfig(ImmutableList.of(), serviceDefinition, ImmutableList.of(), ImmutableList.of(), ImmutableList.of());
-    }
-
-    public <T> ServiceConfig bind(Class<? extends T> toBind, Class<T> bindTo) {
-        return bind(binder -> binder.bind(toBind).to(bindTo));
-    }
-
-    public <T> ServiceConfig bind(T toBind, Class<? super T> bindTo) {
-        return bind(binder -> binder.bind(toBind).to(bindTo));
-    }
-
-    public <T> ServiceConfig bind(Class<T> toBind) {
-        return bind(binder -> binder.bindAsContract(toBind));
-    }
-
-    public ServiceConfig bind(Binder binder) {
-        return withBinders(GuavaHelper.plus(binders, binder));
-    }
-
-    public ServiceConfig bindWithProps(BiConsumer<PropertyProvider, AbstractBinder> propertyBinder) {
-        return hk2ConfigModule(props ->
-                new JerseyConfig.Hk2ConfigModule() {
-                    @Override
-                    public void addBindings(AbstractBinder binder) {
-                        propertyBinder.accept(props, binder);
-
-                    }
-
-                    @Override
-                    public void applyRegistations(ResourceConfig resourceConfig) {
-                    }
-                }
-        );
-    }
-
-    public ServiceConfig registerInstance(Object toRegister) {
-        return register(registrator -> registrator.register(toRegister));
-    }
-
-    public ServiceConfig register(Class toRegister) {
-        return register(registrator -> registrator.register(toRegister));
+        return new ServiceConfig(ImmutableList.of(), serviceDefinition, ImmutableList.of());
     }
 
 
-    public ServiceConfig register(Registrator registrator) {
-        return withRegistrators(GuavaHelper.plus(registrators, registrator));
-    }
-
-    public ServiceConfig hk2ConfigModule(JerseyConfig.Hk2ConfigModule hk2ConfigModule) {
-        return register(hk2ConfigModule)
-                .bind(hk2ConfigModule);
-    }
-
-    public ServiceConfig hk2ConfigModule(Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> prop2Hk2) {
-        return withHk2ConfigProp(GuavaHelper.plus(hk2ConfigProp, prop2Hk2));
-    }
-
-    ServiceConfig addPropertiesAndApplyToBindings(PropertyProvider properties) {
-        ServiceConfig ret = this.withHk2ConfigProp(ImmutableList.of());
-        for (Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> i : hk2ConfigProp) {
-            ret = ret.hk2ConfigModule(i.apply(properties));
-        }
-        return ret.bind(properties, PropertyProvider.class)
+    ServiceConfig applyProperties(PropertyProvider properties) {
+        return this
+                .cdiModule(cdiModule
+                        .bind(properties, PropertyProvider.class)
+                )
                 .withAddons(ImmutableList.copyOf(this
                         .addons.stream()
                         .map(it -> it.withProperties(properties))
                         .collect(toList()
                         ))
-                )
-                ;
+                );
 
+    }
+
+    public List<JerseyConfig.Registrator> getRegistrators() {
+        return cdiModules.stream()
+                .map(it -> it.registrators.stream())
+                .flatMap(Function.identity())
+                .collect(toList());
+    }
+
+    public Iterable<JerseyConfig.Binder> getBindings() {
+        return cdiModules.stream()
+                .map(it -> it.binders.stream())
+                .flatMap(Function.identity())
+                .collect(toList());
     }
 
     @SuppressWarnings("unchecked")
@@ -172,6 +123,10 @@ public class ServiceConfig {
 
     public ServiceConfig addon(Addon addon) {
         return withAddons(GuavaHelper.plus(addons, addon));
+    }
+
+    public ServiceConfig cdiModule(CdiModule cdiModule) {
+        return withCdiModules(GuavaHelper.plus(this.cdiModules, cdiModule));
     }
 
     public boolean isAddonPresent(Class<? extends Addon> swaggerAddonClass) {

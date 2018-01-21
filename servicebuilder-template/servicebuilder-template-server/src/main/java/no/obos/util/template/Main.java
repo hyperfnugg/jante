@@ -8,6 +8,7 @@ import no.obos.util.template.db.dao.TemplateDao;
 import no.obos.util.template.resources.TemplateResource;
 import no.obos.util.template.resources.TemplateResourceImpl;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceRunner.serviceRunner;
 import static no.obos.util.servicebuilder.addon.WebAppAddon.webAppAddon;
 import static no.obos.util.servicebuilder.config.PropertyMap.propertyFileFromJvmArgs;
@@ -15,16 +16,20 @@ import static no.obos.util.servicebuilder.config.PropertyMap.propertyFileFromJvm
 public class Main {
     public final static ServiceConfig commonConfig = Addons.standardAddons(TemplateDefinition.instance)
             .addon(webAppAddon)
-            .bind(TemplateResourceImpl.class, TemplateResource.class);
+            .cdiModule(cdiModule
+                    .bind(TemplateResourceImpl.class, TemplateResource.class)
+            );
 
 
     public final static ServiceConfig mainConfig = commonConfig
-            .bind(TemplateControllerJdbi.class, TemplateController.class)
             .addon(Addons.h2InMemoryDatasource()
                     .script("CREATE TABLE template (id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR, value DOUBLE, startDate DATE)")
             )
             .addon(Addons.jdbi()
                     .dao(TemplateDao.class)
+            )
+            .cdiModule(cdiModule
+                    .bind(TemplateControllerJdbi.class, TemplateController.class)
             );
 
 

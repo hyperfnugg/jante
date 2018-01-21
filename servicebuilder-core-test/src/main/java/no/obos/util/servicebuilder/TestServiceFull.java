@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 
 public class TestServiceFull implements ServiceDefinition {
@@ -158,5 +159,7 @@ public class TestServiceFull implements ServiceDefinition {
 
     public final static TestServiceFull testServiceFull = new TestServiceFull();
     public final static ServiceConfig config = serviceConfig(testServiceFull)
-            .bind(ImplFull.class, ResourceFull.class);
+            .cdiModule(cdiModule
+                    .bind(ImplFull.class, ResourceFull.class)
+            );
 }

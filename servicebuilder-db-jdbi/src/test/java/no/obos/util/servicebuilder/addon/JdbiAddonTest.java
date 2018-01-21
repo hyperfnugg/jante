@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -33,7 +34,9 @@ public class JdbiAddonTest {
                     .script("INSERT INTO testable VALUES (202, 'Per');")
             )
             .addon(jdbiAddon.dao(JdbiDto.class).name("Banan"))
-            .bind(ApiImpl.class, Api.class);
+            .cdiModule(cdiModule
+                    .bind(ApiImpl.class, Api.class)
+            );
 
 
     @Test

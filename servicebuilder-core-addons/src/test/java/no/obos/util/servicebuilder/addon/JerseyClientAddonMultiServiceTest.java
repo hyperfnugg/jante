@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.WebTarget;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -66,17 +67,23 @@ public class JerseyClientAddonMultiServiceTest {
     TestServiceRunner nestedRunner1 = testServiceRunner(
             serviceConfig(stubServiceDefinition(NESTED_NAME1, Nested1.class))
                     .addon(exceptionMapperAddon)
-                    .bind(nestedMock1, Nested1.class)
+                    .cdiModule(cdiModule
+                            .bind(nestedMock1, Nested1.class)
+                    )
     );
     TestServiceRunner nestedRunner2 = testServiceRunner(
             serviceConfig(stubServiceDefinition(NESTED_NAME2, Nested2.class))
                     .addon(exceptionMapperAddon)
-                    .bind(nestedMock2, Nested2.class)
+                    .cdiModule(cdiModule
+                            .bind(nestedMock2, Nested2.class)
+                    )
     );
 
     ServiceConfig outerConfig = serviceConfig(stubServiceDefinition("outer", Outer.class))
             .addon(exceptionMapperAddon)
-            .bind(OuterImpl.class, Outer.class);
+            .cdiModule(cdiModule
+                    .bind(OuterImpl.class, Outer.class)
+            );
 
 
     @Api

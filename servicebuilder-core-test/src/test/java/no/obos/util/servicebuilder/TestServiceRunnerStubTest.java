@@ -6,6 +6,7 @@ import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -13,8 +14,9 @@ import static org.mockito.Mockito.verify;
 public class TestServiceRunnerStubTest {
     private Controller controller = Mockito.mock(Controller.class);
     private TestServiceRunner runner = testServiceRunner(
-            TestServiceFull.config
-                    .bind(controller, Controller.class)
+            TestServiceFull.config.cdiModule(
+                    cdiModule.bind(controller, Controller.class)
+            )
     );
 
 

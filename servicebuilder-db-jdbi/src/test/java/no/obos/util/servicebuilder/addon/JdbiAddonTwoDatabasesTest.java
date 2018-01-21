@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+import static no.obos.util.servicebuilder.CdiModule.cdiModule;
 import static no.obos.util.servicebuilder.ServiceConfig.serviceConfig;
 import static no.obos.util.servicebuilder.ServiceDefinitionUtil.stubServiceDefinition;
 import static no.obos.util.servicebuilder.TestServiceRunner.testServiceRunner;
@@ -40,8 +41,10 @@ public class JdbiAddonTwoDatabasesTest {
                     .insert("mongoable", "'bil'", "'Per'")
             )
             .addon(jdbiAddon.dao(JdbiDto2.class).name(addon_name2))
-            .bind(ApiImpl.class, Api.class)
-            .bind(ApiImpl2.class, Api2.class);
+            .cdiModule(cdiModule
+                    .bind(ApiImpl.class, Api.class)
+                    .bind(ApiImpl2.class, Api2.class)
+            );
 
 
     @Test
