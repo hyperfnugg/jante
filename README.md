@@ -10,7 +10,7 @@ microframeworks. We have found that this approach provides several advantages:
 The code is tailored specific for our needs, it is dependent on our libraries and must be tailored to your needs.
   We wanted to share this code as an example/template of writing your own microservice-chassis.
   
-To install with archetype (Does not seem to work to well with idea):
+To install with archetype (Does not seem to work to well with ideas integrated maven):
 ```
 mvn clean install -Darchetype
 ```

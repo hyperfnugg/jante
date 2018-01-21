@@ -10,16 +10,16 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 @Slf4j
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     @Inject
-    public WebApplicationExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public WebApplicationExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
     public Response toResponse(WebApplicationException exception) {
-        return exceptionUtil.handle(exception, cfg -> cfg
+        return genericExceptionHandler.handle(exception, cfg -> cfg
                 .status(exception.getResponse().getStatus())
                 .logLevel(LogLevel.WARN)
                 .logger(log)

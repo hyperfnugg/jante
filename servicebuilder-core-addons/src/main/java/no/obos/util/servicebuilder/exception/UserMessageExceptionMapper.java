@@ -9,16 +9,16 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 @Slf4j
 public class UserMessageExceptionMapper implements ExceptionMapper<UserMessageException> {
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     @Inject
-    public UserMessageExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public UserMessageExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
     public Response toResponse(UserMessageException exception) {
-        return exceptionUtil.handle(exception, cfg -> cfg
+        return genericExceptionHandler.handle(exception, cfg -> cfg
                 .status(exception.getResponse().getStatus())
                 .logLevel(LogLevel.WARN)
                 .detail(exception.getMessage())

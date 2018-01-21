@@ -18,11 +18,11 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 @Slf4j
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     @Inject
-    public ConstraintViolationExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public ConstraintViolationExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
                 .collect(Collectors.toList());
         String msg = String.format("Validering av parametere feilet med: %s", errors.toString());
 
-        return exceptionUtil.handle(exception, cfg -> cfg
+        return genericExceptionHandler.handle(exception, cfg -> cfg
                 .status(BAD_REQUEST.getStatusCode())
                 .logLevel(LogLevel.WARN)
                 .detail(msg)

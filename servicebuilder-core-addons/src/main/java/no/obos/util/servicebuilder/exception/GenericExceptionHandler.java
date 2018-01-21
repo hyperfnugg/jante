@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
-public class ExceptionUtil {
+public class GenericExceptionHandler {
 
     public static final String APPLICATION_PROBLEM_JSON = "application/problem+json";
     public static final String APPLICATION_PROBLEM_XML = MediaType.APPLICATION_XML;
@@ -34,12 +34,12 @@ public class ExceptionUtil {
 
 
     private final static ImmutableMap<MediaType, String> mediaTypeMap = ImmutableMap.<MediaType, String>builder()
-            .put(MediaType.APPLICATION_JSON_TYPE, ExceptionUtil.APPLICATION_PROBLEM_JSON)
-            .put(MediaType.APPLICATION_XML_TYPE, ExceptionUtil.APPLICATION_PROBLEM_XML)
+            .put(MediaType.APPLICATION_JSON_TYPE, GenericExceptionHandler.APPLICATION_PROBLEM_JSON)
+            .put(MediaType.APPLICATION_XML_TYPE, GenericExceptionHandler.APPLICATION_PROBLEM_XML)
             .build();
 
     @Inject
-    public ExceptionUtil(@Context HttpHeaders headers, ExceptionMapperAddon config, @Context HttpServletRequest request) {
+    public GenericExceptionHandler(@Context HttpHeaders headers, ExceptionMapperAddon config, @Context HttpServletRequest request) {
         this.headers = headers;
         this.config = config;
         this.request = request;

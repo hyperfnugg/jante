@@ -21,15 +21,15 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 public class ExternalResourceExceptionMapper implements ExceptionMapper<ExternalResourceException> {
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     private final static ImmutableSet<String> SKIP_REQUEST_HEADERS = ImmutableSet.of();
     private final static ImmutableSet<String> SKIP_RESPONSE_HEADERS = ImmutableSet.of();
     private final static String INDENTATION = "  ";
 
     @Inject
-    public ExternalResourceExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public ExternalResourceExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
                 ? meta.httpResponseMetaData.incidentReferenceId
                 : null;
         List<String> metaLines = FormatUtil.indentLines(metaDataToLogLines(meta), INDENTATION);
-        return exceptionUtil.handle(exception, cfg -> cfg
+        return genericExceptionHandler.handle(exception, cfg -> cfg
                 .status(INTERNAL_SERVER_ERROR.getStatusCode())
                 .logLevel(LogLevel.ERROR)
                 .detail(detail)

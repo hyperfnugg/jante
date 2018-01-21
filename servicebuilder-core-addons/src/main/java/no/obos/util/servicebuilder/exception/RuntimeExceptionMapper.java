@@ -11,16 +11,16 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     @Inject
-    public RuntimeExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public RuntimeExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
     public Response toResponse(RuntimeException exception) {
-        return exceptionUtil.handle(exception, cfg -> cfg
+        return genericExceptionHandler.handle(exception, cfg -> cfg
                 .status(INTERNAL_SERVER_ERROR.getStatusCode())
                 .logLevel(LogLevel.ERROR)
                 .detail("Det har oppstått en intern feil")

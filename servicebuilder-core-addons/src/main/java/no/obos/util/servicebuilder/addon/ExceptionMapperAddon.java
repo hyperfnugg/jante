@@ -6,9 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
-import no.obos.util.servicebuilder.exception.ExceptionUtil;
+import no.obos.util.servicebuilder.exception.GenericExceptionHandler;
 import no.obos.util.servicebuilder.exception.ExternalResourceExceptionMapper;
-import no.obos.util.servicebuilder.exception.FieldLevelExceptionMapper;
 import no.obos.util.servicebuilder.exception.HttpProblemExceptionMapper;
 import no.obos.util.servicebuilder.exception.JsonProcessingExceptionMapper;
 import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
@@ -42,7 +41,6 @@ public class ExceptionMapperAddon implements Addon {
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addRegistations(registrator -> {
-            registrator.register(FieldLevelExceptionMapper.class);
             registrator.register(JsonProcessingExceptionMapper.class);
             registrator.register(RuntimeExceptionMapper.class);
             registrator.register(ValidationExceptionMapper.class);
@@ -54,7 +52,7 @@ public class ExceptionMapperAddon implements Addon {
         });
         jerseyConfig.addBinder(binder -> {
             binder.bind(this).to(ExceptionMapperAddon.class);
-            binder.bindAsContract(ExceptionUtil.class);
+            binder.bindAsContract(GenericExceptionHandler.class);
         });
     }
 

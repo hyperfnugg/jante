@@ -13,16 +13,16 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 @Slf4j
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
 
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     @Inject
-    public ValidationExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public ValidationExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
     public Response toResponse(ValidationException exception) {
-        return exceptionUtil.handle(exception, cfg -> cfg
+        return genericExceptionHandler.handle(exception, cfg -> cfg
                 .status(BAD_REQUEST.getStatusCode())
                 .logLevel(LogLevel.ERROR)
                 .detail("Valideringsfeil: " + exception.getLocalizedMessage())

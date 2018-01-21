@@ -9,17 +9,17 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 @Slf4j
 public class HttpProblemExceptionMapper implements ExceptionMapper<HttpProblemException> {
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     @Inject
-    public HttpProblemExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public HttpProblemExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
     public Response toResponse(HttpProblemException exception) {
 
-        return exceptionUtil.handle(exception, cfg -> {
+        return genericExceptionHandler.handle(exception, cfg -> {
                     HttpProblem problem = exception.getHttpProblem();
                     return cfg
                             .status(problem.status)

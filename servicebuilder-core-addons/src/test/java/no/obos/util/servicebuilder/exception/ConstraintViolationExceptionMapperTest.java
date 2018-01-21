@@ -41,8 +41,8 @@ public class ConstraintViolationExceptionMapperTest {
 
     @Before
     public void setUp() {
-        ExceptionUtil exceptionUtil = new ExceptionUtil(null, null, null);
-        exceptionMapper = new ConstraintViolationExceptionMapper(exceptionUtil);
+        GenericExceptionHandler genericExceptionHandler = new GenericExceptionHandler(null, null, null);
+        exceptionMapper = new ConstraintViolationExceptionMapper(genericExceptionHandler);
         when(constraintViolation.getConstraintDescriptor()).thenReturn(constraintDescriptor);
         when(constraintViolation.getPropertyPath()).thenReturn(mock(Path.class));
         when(constraintViolation.getMessage()).thenReturn("Validation error message");

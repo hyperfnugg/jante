@@ -12,16 +12,16 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 @Slf4j
 public class JsonProcessingExceptionMapper implements ExceptionMapper<JsonProcessingException> {
-    final private ExceptionUtil exceptionUtil;
+    final private GenericExceptionHandler genericExceptionHandler;
 
     @Inject
-    public JsonProcessingExceptionMapper(ExceptionUtil exceptionUtil) {
-        this.exceptionUtil = exceptionUtil;
+    public JsonProcessingExceptionMapper(GenericExceptionHandler genericExceptionHandler) {
+        this.genericExceptionHandler = genericExceptionHandler;
     }
 
     @Override
     public Response toResponse(JsonProcessingException exception) {
-        return exceptionUtil.handle(exception, cfg -> cfg
+        return genericExceptionHandler.handle(exception, cfg -> cfg
                 .status(BAD_REQUEST.getStatusCode())
                 .logLevel(LogLevel.ERROR)
                 .detail("Det har oppstått en intern feil")
