@@ -11,21 +11,18 @@
     <dependencies>
         <dependency>
             <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-core</artifactId>
+            <artifactId>servicebuilder-core-addons</artifactId>
         </dependency>
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-core-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-core-addons</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
 
 
