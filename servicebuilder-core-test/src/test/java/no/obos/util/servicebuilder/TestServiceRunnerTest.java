@@ -19,7 +19,7 @@ public class TestServiceRunnerTest {
     private Resource impl = Mockito.mock(Resource.class);
     private TestServiceRunner runner = testServiceRunner(
             serviceConfig(testService)
-                    .cdiModule(cdiModule.bind(impl, Resource.class))
+                    .cdi(props -> cdiModule.bind(impl, Resource.class))
     );
 
     @Test

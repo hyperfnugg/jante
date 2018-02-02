@@ -72,7 +72,7 @@ public class SearcherTest {
                         .addon(elasticsearchMockAddon)
                         .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class))
                         .addon(elasticsearchIndexAddon("anotherIndex", String.class))
-                        .cdiModule(cdiModule
+                        .cdi(props -> cdiModule
                                 .bind(ResourceImpl.class, Resource.class)
                         );
         runner = testServiceRunner(serviceConfig);

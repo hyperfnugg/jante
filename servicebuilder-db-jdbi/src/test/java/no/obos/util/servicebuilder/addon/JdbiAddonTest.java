@@ -34,7 +34,7 @@ public class JdbiAddonTest {
                     .script("INSERT INTO testable VALUES (202, 'Per');")
             )
             .addon(jdbiAddon.dao(JdbiDto.class).name("Banan"))
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(ApiImpl.class, Api.class)
             );
 

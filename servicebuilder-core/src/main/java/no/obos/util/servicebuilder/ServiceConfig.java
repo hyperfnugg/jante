@@ -26,19 +26,19 @@ public class ServiceConfig {
     @Wither(AccessLevel.PACKAGE)
     private final ImmutableList<Addon> addons;
     @Wither(AccessLevel.PACKAGE)
-    private final ImmutableList<CdiModule> cdiModules;
+    private final ImmutableList<Function<PropertyProvider, CdiModule>> cdiModuleConfigs;
 
 
     public static ServiceConfig serviceConfig(ServiceDefinition serviceDefinition) {
-        return new ServiceConfig(serviceDefinition, ImmutableList.of(), ImmutableList.of());
+        return new ServiceConfig(serviceDefinition, ImmutableList.of(), ImmutableList.of(props -> cdiModule.bind(props, PropertyProvider.class)));
     }
 
 
     Runtime applyProperties(PropertyProvider properties) {
-        ImmutableList<CdiModule> cdiModulesWithProps = GuavaHelper.plus(
-                cdiModules,
-                cdiModule.bind(properties, PropertyProvider.class)
-        );
+        ImmutableList<CdiModule> cdiModules = cdiModuleConfigs.stream()
+                .map(f -> f.apply(properties))
+                .collect(GuavaHelper.listCollector());
+
         List<Addon> addonsWithProps = addons.stream()
                 .map(it -> it.withProperties(properties))
                 .collect(toList());
@@ -47,7 +47,7 @@ public class ServiceConfig {
         ImmutableList<Addon> initializedAddons = ImmutableList.of();
 
         for (Addon addon : unFinalizedAddons) {
-            Addon initializedAddon = addon.initialize(new Runtime(serviceDefinition, initializedAddons, cdiModulesWithProps));
+            Addon initializedAddon = addon.initialize(new Runtime(serviceDefinition, initializedAddons, cdiModules));
             initializedAddons = GuavaHelper.plus(initializedAddons, initializedAddon);
         }
 
@@ -58,7 +58,7 @@ public class ServiceConfig {
         return new Runtime(serviceDefinition, initializedAddons,
                 ImmutableList.<CdiModule>builder()
                         .addAll(modules)
-                        .addAll(cdiModulesWithProps)
+                        .addAll(cdiModules)
                         .build()
         );
     }
@@ -101,8 +101,8 @@ public class ServiceConfig {
         );
     }
 
-    public ServiceConfig cdiModule(CdiModule cdiModule) {
-        return withCdiModules(GuavaHelper.plus(this.cdiModules, cdiModule));
+    public ServiceConfig cdi(Function<PropertyProvider, CdiModule> cdiModule) {
+        return withCdiModuleConfigs(GuavaHelper.plus(this.cdiModuleConfigs, cdiModule));
     }
 
     public static class Runtime {

@@ -75,7 +75,7 @@ public class IndexerTest {
                         .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class)
                                 .doIndexing(true)
                         )
-                        .cdiModule(cdiModule
+                        .cdi(props -> cdiModule
                                 .bind(ResourceImpl.class, Resource.class)
                         );
         runner = testServiceRunner(serviceConfig);

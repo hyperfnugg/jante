@@ -68,7 +68,7 @@ public class TestService implements ServiceDefinition {
 
     public final static TestService testService = new TestService();
     public final static ServiceConfig config = serviceConfig(testService)
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(TestService.Impl.class, TestService.Resource.class)
             );
 }

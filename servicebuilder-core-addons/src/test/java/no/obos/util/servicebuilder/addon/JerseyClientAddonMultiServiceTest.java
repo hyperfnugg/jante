@@ -67,21 +67,21 @@ public class JerseyClientAddonMultiServiceTest {
     TestServiceRunner nestedRunner1 = testServiceRunner(
             serviceConfig(stubServiceDefinition(NESTED_NAME1, Nested1.class))
                     .addon(exceptionMapperAddon)
-                    .cdiModule(cdiModule
+                    .cdi(props -> cdiModule
                             .bind(nestedMock1, Nested1.class)
                     )
     );
     TestServiceRunner nestedRunner2 = testServiceRunner(
             serviceConfig(stubServiceDefinition(NESTED_NAME2, Nested2.class))
                     .addon(exceptionMapperAddon)
-                    .cdiModule(cdiModule
+                    .cdi(props -> cdiModule
                             .bind(nestedMock2, Nested2.class)
                     )
     );
 
     ServiceConfig outerConfig = serviceConfig(stubServiceDefinition("outer", Outer.class))
             .addon(exceptionMapperAddon)
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(OuterImpl.class, Outer.class)
             );
 

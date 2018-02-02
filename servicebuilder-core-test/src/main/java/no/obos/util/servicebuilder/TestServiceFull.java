@@ -159,7 +159,7 @@ public class TestServiceFull implements ServiceDefinition {
 
     public final static TestServiceFull testServiceFull = new TestServiceFull();
     public final static ServiceConfig config = serviceConfig(testServiceFull)
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(ImplFull.class, ResourceFull.class)
             );
 }

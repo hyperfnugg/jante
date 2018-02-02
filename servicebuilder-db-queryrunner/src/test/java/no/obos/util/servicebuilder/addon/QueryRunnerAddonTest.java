@@ -36,7 +36,7 @@ public class QueryRunnerAddonTest {
     @Test
     public void runsWithQueryRunner() {
         ServiceConfig serviceConfig = this.serviceConfig
-                .cdiModule(cdiModule
+                .cdi(props -> cdiModule
                         .bind(ApiImpl.class, Api.class)
                 );
         Integer actual = testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);
@@ -46,7 +46,7 @@ public class QueryRunnerAddonTest {
     @Test
     public void runsWithQueryRunnerAdapter() {
         ServiceConfig serviceConfig = this.serviceConfig
-                .cdiModule(cdiModule
+                .cdi(props -> cdiModule
                         .bind(ApiImplAdapter.class, Api.class)
                 );
         Integer actual = testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);

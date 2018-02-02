@@ -33,7 +33,7 @@ public class JerseyClientAddonErrorHandlingTest {
                     .addon(exceptionMapperAddon
                             .stacktraceConfig(RuntimeException.class, false)
                     )
-                    .cdiModule(cdiModule
+                    .cdi(props -> cdiModule
                             .bind(resource, Resource.class)
                     )
     );

@@ -44,7 +44,7 @@ public class TestChain {
         };
         this.serviceRunner = serviceRunner
                 .serviceConfig(serviceRunner.getServiceConfig()
-                        .cdiModule(cdiModule
+                        .cdi(props -> cdiModule
                                 .registerInstance(lifecycleListener)
                         )
                 );

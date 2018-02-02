@@ -48,14 +48,14 @@ public class JerseyClientAddonTest {
 
     TestServiceRunner nestedRunner = testServiceRunner(
             serviceConfig(testService)
-                    .cdiModule(cdiModule
+                    .cdi(props -> cdiModule
                             .bind(nestedResourceMock, Resource.class)
                     )
     );
 
     ServiceConfig outerServiceConfig = serviceConfig(stubServiceDefinition("outer", OuterResource.class))
             .addon(exceptionMapperAddon)
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(OuterResourceImpl.class, OuterResource.class)
             );
 

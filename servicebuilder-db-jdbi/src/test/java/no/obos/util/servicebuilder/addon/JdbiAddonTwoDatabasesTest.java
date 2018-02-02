@@ -41,7 +41,7 @@ public class JdbiAddonTwoDatabasesTest {
                     .insert("mongoable", "'bil'", "'Per'")
             )
             .addon(jdbiAddon.dao(JdbiDto2.class).name(addon_name2))
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(ApiImpl.class, Api.class)
                     .bind(ApiImpl2.class, Api2.class)
             );

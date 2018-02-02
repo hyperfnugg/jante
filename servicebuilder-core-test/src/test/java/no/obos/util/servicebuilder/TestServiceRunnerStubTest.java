@@ -14,7 +14,7 @@ import static org.mockito.Mockito.verify;
 public class TestServiceRunnerStubTest {
     private Controller controller = Mockito.mock(Controller.class);
     private TestServiceRunner runner = testServiceRunner(
-            TestServiceFull.config.cdiModule(
+            TestServiceFull.config.cdi(props ->
                     cdiModule.bind(controller, Controller.class)
             )
     );

@@ -38,12 +38,12 @@ public class TemplateCrudForVariousBackends {
     public static Collection<ServiceConfig> data() {
         return Lists.newArrayList(
                 commonConfig
-                        .cdiModule(cdiModule
+                        .cdi(props -> cdiModule
                                 .bindSingleton(TemplateControllerInMemory.class, TemplateController.class)
                         )
                 , mainConfig
                 , commonConfig
-                        .cdiModule(cdiModule
+                        .cdi(props -> cdiModule
                                 .bindSingleton(TemplateControllerElasticsearch.class, TemplateController.class)
                         )
                         .addon(Addons.elasticsearchMock())

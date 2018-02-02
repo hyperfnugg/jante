@@ -36,7 +36,7 @@ public class TemplateResourceUnitTest {
         Template expected = Template.ofDto(expectedDto);
         TemplateController controller = Mockito.mock(TemplateController.class);
         TestServiceRunner runner = testServiceRunner(config
-                .cdiModule(cdiModule
+                .cdi(props -> cdiModule
                         .bind(controller, TemplateController.class)
                 )
         );

@@ -16,7 +16,7 @@ import static no.obos.util.servicebuilder.config.PropertyMap.propertyFileFromJvm
 public class Main {
     public final static ServiceConfig commonConfig = Addons.standardAddons(TemplateDefinition.instance)
             .addon(webAppAddon)
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(TemplateResourceImpl.class, TemplateResource.class)
             );
 
@@ -28,7 +28,7 @@ public class Main {
             .addon(Addons.jdbi()
                     .dao(TemplateDao.class)
             )
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(TemplateControllerJdbi.class, TemplateController.class)
             );
 

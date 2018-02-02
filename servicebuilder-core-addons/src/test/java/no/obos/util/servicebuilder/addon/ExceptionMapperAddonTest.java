@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class ExceptionMapperAddonTest {
     TestService.Resource resource = mock(TestService.Resource.class);
     ServiceConfig config = serviceConfig(testService)
-            .cdiModule(cdiModule
+            .cdi(props -> cdiModule
                     .bind(resource, TestService.Resource.class)
             )
             .addon(exceptionMapperAddon.stacktraceConfig(RuntimeException.class, false));
