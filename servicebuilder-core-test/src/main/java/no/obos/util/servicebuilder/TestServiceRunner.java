@@ -123,9 +123,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
         ServiceConfig.Runtime configRuntime = serviceConfig.applyProperties(properties);
 
-        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition)
-                .addRegistrators(configRuntime.getRegistrators())
-                .addBinders(configRuntime.getBindings());
+        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition, configRuntime.cdiModules);
 
         DeploymentContext context = DeploymentContext.builder(jerseyConfig.getResourceConfig()).build();
         URI uri = UriBuilder.fromUri("http://localhost/").port(0).build();

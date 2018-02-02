@@ -63,7 +63,7 @@ public class ServiceRunner {
 
         ServiceConfig.Runtime configRuntime = this.config.applyProperties(properties);
 
-        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition);
+        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition, configRuntime.cdiModules);
 
         JettyServer.Configuration jettyConfig = JettyServer.Configuration.builder()
                 .bindPort(port)
@@ -71,10 +71,6 @@ public class ServiceRunner {
                 .build();
 
         JettyServer jettyServer = new JettyServer(jettyConfig, jerseyConfig);
-
-        jerseyConfig
-                .addRegistrators(configRuntime.getRegistrators())
-                .addBinders(configRuntime.getBindings());
 
         configRuntime.addons.addons.forEach(it -> it.addToJettyServer(jettyServer));
 
