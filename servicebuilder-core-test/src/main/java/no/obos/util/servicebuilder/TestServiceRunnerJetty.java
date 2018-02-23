@@ -107,7 +107,7 @@ public class TestServiceRunnerJetty implements TestServiceRunnerBase {
         ServiceRunner serviceRunner = serviceRunner(serviceConfig).properties(propertyMap);
         ServiceRunner.Runtime runnerRuntime = serviceRunner.start();
 
-        URI uri = runnerRuntime.jettyServer.server.getURI();
+        URI uri = runnerRuntime.jettyRuntime.server.getURI();
         uri = UriBuilder.fromUri(uri).host("localhost").build();
 
         ClientGenerator generator = clientConfigurator.apply(

@@ -39,7 +39,8 @@ public interface Addon {
     /**
      * Modifies jetty to incorporate addon.
      */
-    default void addToJettyServer(JettyServer serviceConfig) {
+    default JettyServer addToJettyServer(JettyServer jettyServer) {
+        return jettyServer;
     }
 
     /**

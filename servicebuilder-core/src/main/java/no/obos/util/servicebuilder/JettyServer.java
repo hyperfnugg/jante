@@ -1,96 +1,131 @@
 package no.obos.util.servicebuilder;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.experimental.Wither;
+import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import java.net.InetSocketAddress;
-import java.util.Objects;
+import java.util.EnumSet;
+import java.util.function.Consumer;
 
+import static lombok.AccessLevel.PRIVATE;
 import static no.obos.util.servicebuilder.util.ExceptionUtil.wrapCheckedExceptionsVoid;
 
-public class JettyServer {
+@AllArgsConstructor
+public final class JettyServer {
+
     public static final String CONFIG_KEY_SERVER_CONTEXT_PATH = "server.contextPath";
     public static final String CONFIG_KEY_SERVER_PORT = "server.port";
     public static final String CONFIG_KEY_API_PATHSPEC = "server.apiPath";
 
     public static final String DEFAULT_API_PATH_SPEC = "api";
-    private static final String DEFAULT_BIND_ADDRESS = "0.0.0.0";
+    public static final String DEFAULT_BIND_ADDRESS = "0.0.0.0";
+    public static final int DEFAULT_BIND_PORT = 3000;
 
-    @Getter
-    public final Server server;
-    @Getter
-    public final ServletContextHandler servletContext;
-    @Getter
-    @Setter
-    public WebAppContext webAppContext = null;
-    @Getter
-    public final JerseyConfig resourceConfig;
-    @Getter
-    public final Configuration configuration;
 
-    public JettyServer(Configuration configuration, JerseyConfig resourceConfig) {
-        this.resourceConfig = resourceConfig;
-        this.configuration = configuration;
-        server = new Server(InetSocketAddress.createUnresolved(configuration.bindAddress, configuration.bindPort));
-//        servletContext = new ServletContextHandler(server, configuration.contextPath);
-        servletContext = new ServletContextHandler(server, configuration.contextPath);
-    }
+    public final String apiPathSpec;
+    public final String bindAddress;
+    @Wither(PRIVATE)
+    public final String contextPath;
+    @Wither(PRIVATE)
+    public final int bindPort;
+    @Wither(PRIVATE)
+    final ImmutableList<Consumer<ServletContextHandler>> apiContextMutators;
+    @Wither(PRIVATE)
+    ImmutableList<Handler> handlers;
 
-    public JettyServer start() {
-        ServletHolder servletHolder = new ServletHolder(new ServletContainer(resourceConfig.getResourceConfig()));
-        servletContext.addServlet(servletHolder, configuration.apiPathSpec);
+    public static JettyServer jettyServer = new JettyServer(
+            "/" + DEFAULT_API_PATH_SPEC + "/*",
+            DEFAULT_BIND_ADDRESS,
+            "",
+            DEFAULT_BIND_PORT,
+            ImmutableList.of(),
+            ImmutableList.of()
+    );
+
+
+    public Runtime start(JerseyConfig jerseyConfig) {
+        ServletContainer sc = new ServletContainer(jerseyConfig.resourceConfig);
+
+        ServletHolder servletHolder = new ServletHolder(sc);
+
+        ServletContextHandler jerseyResourceContext = new ServletContextHandler();
+        jerseyResourceContext.addServlet(servletHolder, apiPathSpec);
+        jerseyResourceContext.setContextPath("/");
+
         ContextHandlerCollection contexts = new ContextHandlerCollection();
-        Handler[] handlers = Lists.newArrayList(servletContext, webAppContext)
-                .stream().filter(Objects::nonNull).toArray(Handler[]::new);
-        contexts.setHandlers(handlers);
+        contexts.setHandlers(GuavaHelper.plus(this.handlers, jerseyResourceContext).reverse().toArray(new Handler[0]));
 
+        Server server = new Server(InetSocketAddress.createUnresolved(bindAddress, bindPort));
         server.setHandler(contexts);
         wrapCheckedExceptionsVoid(server::start);
-        return this;
+        return new Runtime(server, this);
     }
 
+    public JettyServer addFilterToApi(Filter logFilter, ImmutableList<DispatcherType> dispatches) {
 
-    public void join() {
-        wrapCheckedExceptionsVoid(server::join);
+        return apiContextMutator(apiServletContext -> {
+            String pathSpec = jettyServer.apiPathSpec;
+            FilterHolder logFilterHolder = new FilterHolder(logFilter);
+            apiServletContext
+                    .addFilter(logFilterHolder, pathSpec, EnumSet.copyOf(dispatches));
+        });
     }
 
-    public void stop() {
-        wrapCheckedExceptionsVoid(server::stop);
+    public JettyServer addStaticResources(String resourceUrlString, boolean hotReload, String pathSpec) {
+
+        String path = Joiner.on('/')
+                .skipNulls()
+                .join(contextPath, pathSpec);
+        WebAppContext webAppContext = new WebAppContext(resourceUrlString, path);
+        if (hotReload) {
+            webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
+        }
+        return handler(webAppContext);
     }
 
-    public static Configurator defaults() {
-        return cfg -> cfg;
-    }
-
-    public void addAppContext(WebAppContext webAppContext) {
-        this.webAppContext = webAppContext;
-    }
-
-    @Getter
     @AllArgsConstructor
-    @Builder
-    public static class Configuration {
-        @Builder.Default
-        public final String apiPathSpec = "/" + DEFAULT_API_PATH_SPEC + "/*";
-        @Builder.Default
-        public final String bindAddress = DEFAULT_BIND_ADDRESS;
-        @Builder.Default
-        public final String contextPath = "";
-        public final int bindPort;
+    public static class Runtime {
+        public final Server server;
+        public final JettyServer jettyServer;
+
+        public Runtime join() {
+            wrapCheckedExceptionsVoid(server::join);
+            return this;
+        }
+
+        public Runtime stop() {
+            wrapCheckedExceptionsVoid(server::stop);
+            return this;
+        }
+
     }
 
+    private JettyServer apiContextMutator(Consumer<ServletContextHandler> mutator) {
+        return this.withApiContextMutators(GuavaHelper.plus(apiContextMutators, mutator));
+    }
 
-    public interface Configurator {
-        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder cfg);
+    private JettyServer handler(Handler handler) {
+        return this.withHandlers(GuavaHelper.plus(handlers, handler));
+    }
+
+    public JettyServer contextPath(String contextPath) {
+        return this.withContextPath(contextPath);
+    }
+
+    public JettyServer bindPort(int bindPort) {
+        return this.withBindPort(bindPort);
     }
 }

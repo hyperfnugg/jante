@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.addon;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
@@ -8,7 +7,6 @@ import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.util.ExceptionUtil;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,23 +39,39 @@ public class WebAppAddon implements Addon {
 
 
     @Override
-    public void addToJettyServer(JettyServer jettyServer) {
-        WebAppContext webAppContext;
-        webAppContext = new WebAppContext();
+    public JettyServer addToJettyServer(JettyServer jettyServer) {
         URI parsedResourceUri = ExceptionUtil.wrapCheckedExceptions(() -> new URI(this.resourceUri));
-        String warUrlString;
+        String resourceUrlString;
+        String scheme = getScheme(parsedResourceUri);
+        String path = getPath(parsedResourceUri);
+        boolean hotReload = "file".equals(scheme);
+        resourceUrlString = getResourceUrlString(scheme, path);
+
+
+        return jettyServer.addStaticResources(resourceUrlString, hotReload, pathSpec);
+    }
+
+
+    private String getPath(URI parsedResourceUri) {
+        String path = parsedResourceUri.getSchemeSpecificPart();
+        path = (path.startsWith("//")) ? path.substring(2) : path;
+        return path;
+    }
+
+    private String getScheme(URI parsedResourceUri) {
         String scheme = parsedResourceUri.getScheme();
         if (scheme == null) {
             throw new IllegalStateException("URI did not contain scheme: " + parsedResourceUri.toString());
         }
-        String path = parsedResourceUri.getSchemeSpecificPart();
-        path = (path.startsWith("//")) ? path.substring(2) : path;
+        return scheme;
+    }
+
+    private String getResourceUrlString(String scheme, String path) {
+        String resourceUrlString;
         switch (scheme) {
             case "file":
-                webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
-                LOGGER.warn("*** Kjører i DEV-modus, leser webfiler rett fra utviklingskataloger. ***");
-                warUrlString = path;
-                File f = new File(warUrlString);
+                resourceUrlString = path;
+                File f = new File(resourceUrlString);
                 if (!f.exists()) {
                     throw new IllegalStateException("Could not find file " + path);
                 }
@@ -67,18 +81,12 @@ public class WebAppAddon implements Addon {
                 if (warUrl == null) {
                     throw new NullPointerException();
                 }
-                warUrlString = warUrl.toExternalForm();
+                resourceUrlString = warUrl.toExternalForm();
                 break;
             default:
                 throw new IllegalArgumentException("Unrecognized URI scheme " + scheme + ". Allowed: classpath, file");
         }
-        webAppContext.setResourceBase(warUrlString);
-        String contextPath = Joiner.on('/')
-                .skipNulls()
-                .join(jettyServer.configuration.contextPath, pathSpec);
-        webAppContext.setContextPath(contextPath);
-        webAppContext.setParentLoaderPriority(true);
-        jettyServer.addAppContext(webAppContext);
+        return resourceUrlString;
     }
 
     public WebAppAddon pathSpec(String pathSpec) {

@@ -61,12 +61,13 @@ public class ActiveMqSenderAddon implements Addon {
     }
 
     @Override
-    public void addToJettyServer(JettyServer jettyServer) {
+    public JettyServer addToJettyServer(JettyServer jettyServer) {
         if (registerHealthcheck) {
             ObosHealthCheckRegistry.registerActiveMqCheck("Sender queue: " + queue + " on " + url,
                     url, queue, MAX_QUEUE_ENTRIES, queueEntriesGrace,
                     user, password);
         }
+        return jettyServer;
     }
 
     @Override

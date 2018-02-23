@@ -89,13 +89,14 @@ public class BasicDatasourceAddon implements DataSourceAddon {
     }
 
     @Override
-    public void addToJettyServer(JettyServer jettyServer) {
+    public JettyServer addToJettyServer(JettyServer jettyServer) {
         if (monitorIntegration) {
             String dataSourceName = Strings.isNullOrEmpty(name)
                     ? " (" + name + ")"
                     : "";
             ObosHealthCheckRegistry.registerDataSourceCheck("Database" + dataSourceName + ": " + url, dataSource, validationQuery);
         }
+        return jettyServer;
     }
 
     public BasicDatasourceAddon name(String name) {

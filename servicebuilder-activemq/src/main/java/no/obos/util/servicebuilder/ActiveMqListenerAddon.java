@@ -97,9 +97,10 @@ public class ActiveMqListenerAddon implements Addon {
     }
 
     @Override
-    public void addToJettyServer(JettyServer jettyServer) {
+    public JettyServer addToJettyServer(JettyServer jettyServer) {
         ObosHealthCheckRegistry.registerActiveMqCheck("Input queue: " + queueInput + " on " + url, url, queueInput, queueEntriesMax, queueEntriesGrace, user, password);
         ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url, queueError, user, password);
+        return jettyServer;
     }
 
     @Override

@@ -5,13 +5,16 @@ import lombok.Builder;
 import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.config.PropertyMap;
+import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import static lombok.AccessLevel.PRIVATE;
-import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_CONTEXT_PATH;
-import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_PORT;
+import static no.obos.util.servicebuilder.JettyServer.*;
 import static no.obos.util.servicebuilder.config.PropertyMap.propertyMap;
+
+import no.obos.util.servicebuilder.ServiceRunner.Runtime;
+
 
 @Slf4j
 @AllArgsConstructor
@@ -65,21 +68,19 @@ public class ServiceRunner {
 
         JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition, configRuntime.cdiModules);
 
-        JettyServer.Configuration jettyConfig = JettyServer.Configuration.builder()
+        JettyServer jettyConfig = jettyServer
                 .bindPort(port)
-                .contextPath(contextPath)
-                .build();
+                .contextPath(contextPath);
 
-        JettyServer jettyServer = new JettyServer(jettyConfig, jerseyConfig);
+        for (Addon addon : configRuntime.addons.addons) {
+            jettyConfig = addon.addToJettyServer(jettyConfig);
+        }
 
-        configRuntime.addons.addons.forEach(it -> it.addToJettyServer(jettyServer));
-
-        jettyServer.start();
+        JettyServer.Runtime jettyRuntime = jettyConfig.start(jerseyConfig);
         return Runtime.builder()
                 .configRuntime(configRuntime)
                 .jerseyConfig(jerseyConfig)
-                .jettyConfig(jettyConfig)
-                .jettyServer(jettyServer)
+                .jettyRuntime(jettyRuntime)
                 .runner(this)
                 .build();
     }
@@ -95,13 +96,12 @@ public class ServiceRunner {
     @AllArgsConstructor(access = PRIVATE)
     public static class Runtime {
         public final ServiceConfig.Runtime configRuntime;
-        public final JettyServer jettyServer;
+        public final JettyServer.Runtime jettyRuntime;
         public final JerseyConfig jerseyConfig;
-        public JettyServer.Configuration jettyConfig;
         public ServiceRunner runner;
 
         public void join() {
-            jettyServer.join();
+            jettyRuntime.join();
         }
 
         public void stop() {
@@ -112,7 +112,7 @@ public class ServiceRunner {
                     log.error("Exception during cleanup", ex);
                 }
             });
-            jettyServer.stop();
+            jettyRuntime.stop();
         }
 
         private static RuntimeBuilder builder() {

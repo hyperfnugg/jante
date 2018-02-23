@@ -51,9 +51,10 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
     private static ElasticsearchIndexAddon defaults = new ElasticsearchIndexAddon(null, null, null, false, SerializationSpec.standard);
 
     @Override
-    public void addToJettyServer(JettyServer jettyServer) {
+    public JettyServer addToJettyServer(JettyServer jettyServer) {
         Client client = elasticsearchAddon.getClient();
         ObosHealthCheckRegistry.registerElasticSearchClusterCheck("Indexer: ", getClusterName(client), indexname, client.admin().cluster());
+        return jettyServer;
     }
 
     @Override
