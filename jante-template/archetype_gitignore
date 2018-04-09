@@ -1,6 +1,6 @@
 #Idea
 /.idea/
-/jante.iml
+/jante-template.iml
 
 #Eclipse
 /.classpath
@@ -9,4 +9,3 @@
 
 #Maven
 /target
-

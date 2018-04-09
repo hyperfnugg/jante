@@ -1,4 +1,4 @@
-# Service Builder
+# Jante
 
 In OBOS we decided to write our own microservice-chassis instead of using spring/j2ee/dropwizard. The reasoning was that
 a microservice-chassis is just a bundling of microframeworks, a problem that is not to hard if you choose the right

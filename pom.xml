@@ -2,37 +2,37 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.obos.util</groupId>
-    <artifactId>servicebuilder</artifactId>
-    <version>8.0.0-SNAPSHOT</version>
+    <artifactId>jante</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
 
-    <name>servicebuilder</name>
+    <name>jante</name>
 
     <modules>
-        <module>servicebuilder-interfaces</module>
-        <module>servicebuilder-core</module>
-        <module>servicebuilder-core-test</module>
-        <module>servicebuilder-core-addons</module>
-        <module>servicebuilder-db</module>
-        <module>servicebuilder-db-h2</module>
-        <module>servicebuilder-db-basicdatasource</module>
-        <module>servicebuilder-db-queryrunner</module>
-        <module>servicebuilder-db-jdbi</module>
-        <module>servicebuilder-activemq</module>
-        <module>servicebuilder-addons</module>
-        <module>servicebuilder-elasticsearch</module>
-        <module>servicebuilder-elasticsearch-mock</module>
-        <module>servicebuilder-template</module>
+        <module>jante-interfaces</module>
+        <module>jante-core</module>
+        <module>jante-core-test</module>
+        <module>jante-core-addons</module>
+        <module>jante-db</module>
+        <module>jante-db-h2</module>
+        <module>jante-db-basicdatasource</module>
+        <module>jante-db-queryrunner</module>
+        <module>jante-db-jdbi</module>
+        <module>jante-activemq</module>
+        <module>jante-addons</module>
+        <module>jante-elasticsearch</module>
+        <module>jante-elasticsearch-mock</module>
+        <module>jante-template</module>
     </modules>
 
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <servicebuilder.version>8.0.0-SNAPSHOT</servicebuilder.version>
+        <jante.version>8.0.0-SNAPSHOT</jante.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
@@ -80,68 +80,68 @@
             <!-- For dependencies between submodules -->
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-interfaces</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-interfaces</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-core</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-core</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-core-test</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-core-test</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-core-addons</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-core-addons</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-db</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-db</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-db-h2</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-db-h2</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-db-basicdatasource</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-db-basicdatasource</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-db-jdbi</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-db-jdbi</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-db-queryrunner</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-db-queryrunner</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-activemq</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-activemq</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-addons</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-addons</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-elasticsearch</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-elasticsearch</artifactId>
+                <version>${jante.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-elasticsearch-mock</artifactId>
-                <version>${servicebuilder.version}</version>
+                <artifactId>jante-elasticsearch-mock</artifactId>
+                <version>${jante.version}</version>
             </dependency>
 
 

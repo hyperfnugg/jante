@@ -1,6 +1,6 @@
 #Idea
 /.idea/
-/jante.iml
+/jante-db-h2.iml
 
 #Eclipse
 /.classpath
