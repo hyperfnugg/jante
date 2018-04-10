@@ -50,7 +50,7 @@ public class Addons {
 
     /*
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-basicdatasource</artifactId>
         </dependency>
      */
@@ -60,7 +60,7 @@ public class Addons {
 
     /*
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-h2</artifactId>
         </dependency>
      */
@@ -70,7 +70,7 @@ public class Addons {
 
     /*
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-jdbi</artifactId>
         </dependency>
      */
@@ -80,7 +80,7 @@ public class Addons {
 
     /*
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-queryrunner</artifactId>
         </dependency>
      */
@@ -91,7 +91,7 @@ public class Addons {
 
     /*
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-activemq</artifactId>
         </dependency>
     */
@@ -101,7 +101,7 @@ public class Addons {
 
     /*
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-activemq</artifactId>
         </dependency>
     */
@@ -111,7 +111,7 @@ public class Addons {
 
     /*
     <dependency>
-        <groupId>no.obos.util</groupId>
+        <groupId>jante</groupId>
         <artifactId>jante-elasticsearch</artifactId>
     </dependency>
     */
@@ -121,7 +121,7 @@ public class Addons {
 
     /*
     <dependency>
-        <groupId>no.obos.util</groupId>
+        <groupId>jante</groupId>
         <artifactId>jante-elasticsearch-mock</artifactId>
     </dependency>
     */
@@ -131,7 +131,7 @@ public class Addons {
 
     /*
     <dependency>
-        <groupId>no.obos.util</groupId>
+        <groupId>jante</groupId>
         <artifactId>jante-elasticsearch</artifactId>
     </dependency>
     */

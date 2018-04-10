@@ -16,7 +16,7 @@ To generate project from archetype:
 ```
 mvn archetype:generate \
 -B \
--DarchetypeGroupId=no.obos.util.template \
+-DarchetypeGroupId=jante.template \
 -DarchetypeArtifactId=jante-template-archetype \
 -DarchetypeVersion=8.0.0-SNAPSHOT \
 -Dversion=1.0-SNAPSHOT \

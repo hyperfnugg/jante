@@ -3,53 +3,53 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jante-addons</artifactId>
     <parent>
-        <groupId>no.obos.util</groupId>
+        <groupId>jante</groupId>
         <artifactId>jante</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-core-addons</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-basicdatasource</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-h2</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-queryrunner</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-db-jdbi</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-activemq</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-elasticsearch</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>no.obos.util</groupId>
+            <groupId>jante</groupId>
             <artifactId>jante-elasticsearch-mock</artifactId>
             <scope>provided</scope>
         </dependency>

@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>no.obos.util</groupId>
+    <groupId>jante</groupId>
     <artifactId>jante</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -32,7 +32,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jante.version>8.0.0-SNAPSHOT</jante.version>
+        <jante.version>0.1.0-SNAPSHOT</jante.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
@@ -79,67 +79,67 @@
 
             <!-- For dependencies between submodules -->
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-interfaces</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-core</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-core-test</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-core-addons</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-db</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-db-h2</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-db-basicdatasource</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-db-jdbi</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-db-queryrunner</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-activemq</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-addons</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-elasticsearch</artifactId>
                 <version>${jante.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.obos.util</groupId>
+                <groupId>jante</groupId>
                 <artifactId>jante-elasticsearch-mock</artifactId>
                 <version>${jante.version}</version>
             </dependency>
