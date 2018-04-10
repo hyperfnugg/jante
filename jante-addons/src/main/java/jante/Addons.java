@@ -10,12 +10,14 @@ import jante.mq.MessageHandler;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.addon.BasicDatasourceAddon.basicDatasourceAddon;
 import static jante.addon.CorsFilterAddon.corsFilterAddon;
+import static jante.addon.ElasticsearchClientAddon.elasticsearchClientAddon;
 import static jante.addon.ElasticsearchMockAddon.elasticsearchMockAddon;
 import static jante.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static jante.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
 import static jante.addon.JdbiAddon.jdbiAddon;
 import static jante.addon.JerseyClientAddon.jerseyClientAddon;
 import static jante.addon.QueryRunnerAddon.queryRunnerAddon;
+import static jante.addon.RequestIdAddon.requestIdAddon;
 import static jante.addon.ServerLogAddon.serverLogAddon;
 import static jante.addon.SwaggerAddon.swaggerAddon;
 import static jante.addon.WebAppAddon.webAppAddon;
@@ -23,28 +25,32 @@ import static jante.addon.WebAppAddon.webAppAddon;
 public class Addons {
 
     public static CorsFilterAddon cors() {
-        return CorsFilterAddon.corsFilterAddon;
+        return corsFilterAddon;
+    }
+
+    public static RequestIdAddon requestId() {
+        return requestIdAddon;
     }
 
     public static ExceptionMapperAddon exceptionMapper() {
-        return ExceptionMapperAddon.exceptionMapperAddon;
+        return exceptionMapperAddon;
     }
 
     public static JerseyClientAddon jerseyClient(ServiceDefinition serviceDefinition) {
-        return JerseyClientAddon.jerseyClientAddon(serviceDefinition);
+        return jerseyClientAddon(serviceDefinition);
     }
 
 
     public static SwaggerAddon swagger() {
-        return SwaggerAddon.swaggerAddon;
+        return swaggerAddon;
     }
 
-    public static WebAppAddon webAppAddon() {
-        return WebAppAddon.webAppAddon;
+    public static WebAppAddon webApp() {
+        return webAppAddon;
     }
 
     public static ServerLogAddon serverLog() {
-        return ServerLogAddon.serverLogAddon;
+        return serverLogAddon;
     }
 
 
@@ -75,7 +81,7 @@ public class Addons {
         </dependency>
      */
     public static JdbiAddon jdbi() {
-        return JdbiAddon.jdbiAddon;
+        return jdbiAddon;
     }
 
     /*
@@ -116,7 +122,7 @@ public class Addons {
     </dependency>
     */
     public static ElasticsearchClientAddon elasticsearch() {
-        return ElasticsearchClientAddon.elasticsearchClientAddon;
+        return elasticsearchClientAddon;
     }
 
     /*
@@ -142,11 +148,11 @@ public class Addons {
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
         return serviceConfig(serviceDefinition)
-                .addon(SwaggerAddon.swaggerAddon)
-                .addon(CorsFilterAddon.corsFilterAddon)
-                .addon(RequestIdAddon.requestIdAddon)
-                .addon(ExceptionMapperAddon.exceptionMapperAddon)
-                .addon(ServerLogAddon.serverLogAddon)
+                .addon(swaggerAddon)
+                .addon(corsFilterAddon)
+                .addon(requestIdAddon)
+                .addon(exceptionMapperAddon)
+                .addon(serverLogAddon)
                 ;
     }
 }

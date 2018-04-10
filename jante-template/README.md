@@ -18,11 +18,11 @@ mvn archetype:generate \
 -B \
 -DarchetypeGroupId=jante.template \
 -DarchetypeArtifactId=jante-template-archetype \
--DarchetypeVersion=8.0.0-SNAPSHOT \
+-DarchetypeVersion=0.1.0-SNAPSHOT \
 -Dversion=1.0-SNAPSHOT \
 -DCapitalizedResource=Person \
 -DlowerCaseResource=person \
--DgroupId=no.obos \
+-DgroupId=jante \
 -DartifactId=person
 ```
 

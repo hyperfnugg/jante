@@ -29,14 +29,13 @@ pomFile.newWriter().withWriter { w ->
 File gitIgnoreFile = new File(moduleDir, 'archetype_gitignore')
 boolean renamed = gitIgnoreFile.renameTo(new File(moduleDir, '.gitignore'))
 if (!renamed) {
-    System.out.println('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBADASS\n\n\n\n\n\n\n\n\n\n\n\n\n')
     throw new RuntimeException("Could not rename gitignore file")
 }
 
 
-File readmeFile = new File(moduleDir, 'pom.xml')
+File readmeFile = new File(moduleDir, 'README.md')
 
-List<String> readmeContents = Files.readAllLines(pomFile.toPath())
+List<String> readmeContents = Files.readAllLines(readmeFile.toPath())
 boolean includeStateReadme = true
 String newReadmeContent = ""
 for (String line : readmeContents) {
