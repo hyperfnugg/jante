@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.CdiModule;
+import jante.Injections;
 import jante.JettyServer;
 import jante.ServiceConfig;
 import jante.client.StubGenerator;
@@ -22,7 +22,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import java.net.URI;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.client.ClientGenerator.clientGenerator;
 import static jante.client.StubGenerator.stubGenerator;
 import static jante.client.TargetGenerator.targetGenerator;
@@ -80,8 +80,8 @@ public class JerseyClientAddon implements Addon {
 
 
     @Override
-    public CdiModule getCdiModule() {
-        CdiModule ret = cdiModule;
+    public Injections getInjections() {
+        Injections ret = injections;
 
         String serviceName = serviceDefinition.getName();
         if (!Strings.isNullOrEmpty(serviceName)) {

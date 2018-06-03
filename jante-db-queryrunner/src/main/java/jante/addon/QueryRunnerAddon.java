@@ -1,7 +1,7 @@
 package jante.addon;
 
 import com.google.common.collect.ImmutableSet;
-import jante.CdiModule;
+import jante.Injections;
 import jante.ServiceConfig;
 import jante.exception.DependenceException;
 import jante.model.Addon;
@@ -9,17 +9,10 @@ import jante.queryrunner.QueryRunnerAdapter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.CdiModule;
-import jante.ServiceConfig;
-import jante.exception.DependenceException;
-import jante.model.Addon;
-import jante.queryrunner.QueryRunnerAdapter;
 import org.apache.commons.dbutils.QueryRunner;
 
 import javax.sql.DataSource;
 import java.util.Set;
-
-import static jante.CdiModule.cdiModule;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class QueryRunnerAddon implements Addon {
@@ -46,14 +39,14 @@ public class QueryRunnerAddon implements Addon {
     }
 
     @Override
-    public CdiModule getCdiModule() {
+    public Injections getInjections() {
         if (name != null) {
-            return CdiModule.cdiModule
+            return Injections.injections
                     .bindNamed(queryRunner, QueryRunner.class, name)
                     .bindNamed(QueryRunnerAdapter.class, name)
                     ;
         } else {
-            return CdiModule.cdiModule
+            return Injections.injections
                     .bind(queryRunner, QueryRunner.class)
                     .bind(QueryRunnerAdapter.class)
                     ;

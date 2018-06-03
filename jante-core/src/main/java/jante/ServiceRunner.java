@@ -7,16 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
-import jante.config.PropertyMap;
-import jante.model.Addon;
-import jante.model.PropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import static lombok.AccessLevel.PRIVATE;
 import static jante.JettyServer.*;
-import static jante.config.PropertyMap.propertyMap;
-
-import jante.ServiceRunner.Runtime;
 
 
 @Slf4j
@@ -69,7 +63,7 @@ public class ServiceRunner {
 
         ServiceConfig.Runtime configRuntime = this.config.applyProperties(properties);
 
-        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition, configRuntime.cdiModules);
+        JerseyConfig jerseyConfig = new JerseyConfig(configRuntime.serviceDefinition, configRuntime.injections);
 
         JettyServer jettyConfig = jettyServer
                 .bindPort(port)

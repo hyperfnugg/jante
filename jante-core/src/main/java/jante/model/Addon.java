@@ -1,7 +1,7 @@
 package jante.model;
 
 import com.google.common.collect.ImmutableSet;
-import jante.CdiModule;
+import jante.Injections;
 import jante.JettyServer;
 import jante.ServiceConfig;
 
@@ -32,8 +32,8 @@ public interface Addon {
     /**
      * Register any injections
      */
-    default CdiModule getCdiModule() {
-        return CdiModule.cdiModule;
+    default Injections getInjections() {
+        return Injections.injections;
     }
 
     /**

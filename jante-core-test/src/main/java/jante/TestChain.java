@@ -17,7 +17,7 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import java.util.function.Consumer;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestChain {
@@ -44,7 +44,7 @@ public class TestChain {
         };
         this.serviceRunner = serviceRunner
                 .serviceConfig(serviceRunner.getServiceConfig()
-                        .cdi(props -> cdiModule
+                        .inject(props -> injections
                                 .registerInstance(lifecycleListener)
                         )
                 );

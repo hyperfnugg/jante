@@ -8,15 +8,15 @@ import jante.template.db.dao.TemplateDao;
 import jante.template.resources.TemplateResource;
 import jante.template.resources.TemplateResourceImpl;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceRunner.serviceRunner;
 import static jante.addon.WebAppAddon.webAppAddon;
 import static jante.config.PropertyMap.propertyFileFromJvmArgs;
 
 public class Main {
-    public final static ServiceConfig commonConfig = Addons.standardAddons(TemplateDefinition.instance)
+    public final static ServiceConfig commonConfig = Addons.standardAddons(TemplateDefinition.templateDefinition)
             .addon(webAppAddon)
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(TemplateResourceImpl.class, TemplateResource.class)
             );
 
@@ -28,7 +28,7 @@ public class Main {
             .addon(Addons.jdbi()
                     .dao(TemplateDao.class)
             )
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(TemplateControllerJdbi.class, TemplateController.class)
             );
 

@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized;
 
 import java.util.Collection;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.TestServiceRunner.testServiceRunner;
 import static jante.template.Main.commonConfig;
 import static jante.template.Main.mainConfig;
@@ -38,12 +38,12 @@ public class TemplateCrudForVariousBackends {
     public static Collection<ServiceConfig> data() {
         return Lists.newArrayList(
                 commonConfig
-                        .cdi(props -> cdiModule
+                        .inject(props -> injections
                                 .bindSingleton(TemplateControllerInMemory.class, TemplateController.class)
                         )
                 , mainConfig
                 , commonConfig
-                        .cdi(props -> cdiModule
+                        .inject(props -> injections
                                 .bindSingleton(TemplateControllerElasticsearch.class, TemplateController.class)
                         )
                         .addon(Addons.elasticsearchMock())

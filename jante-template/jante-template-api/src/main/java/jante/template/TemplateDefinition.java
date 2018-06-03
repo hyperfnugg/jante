@@ -27,5 +27,5 @@ public class TemplateDefinition implements ServiceDefinition {
         return RESOURCES;
     }
 
-    public static final TemplateDefinition instance = new TemplateDefinition();
+    public static final TemplateDefinition templateDefinition = new TemplateDefinition();
 }

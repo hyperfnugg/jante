@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.ServiceDefinitionUtil.stubServiceDefinition;
 import static jante.TestServiceRunner.testServiceRunner;
@@ -75,7 +75,7 @@ public class IndexerTest {
                         .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class)
                                 .doIndexing(true)
                         )
-                        .cdi(props -> cdiModule
+                        .inject(props -> injections
                                 .bind(ResourceImpl.class, Resource.class)
                         );
         runner = testServiceRunner(serviceConfig);

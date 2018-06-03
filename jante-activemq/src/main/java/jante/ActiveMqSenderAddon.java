@@ -8,11 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import jante.model.Addon;
 import jante.model.PropertyProvider;
-import jante.mq.ActiveMqSender;
-import jante.mq.MessageQueueSender;
 import jante.util.ObosHealthCheckRegistry;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveMqSenderAddon implements Addon {
@@ -52,12 +50,12 @@ public class ActiveMqSenderAddon implements Addon {
     }
 
     @Override
-    public CdiModule getCdiModule() {
+    public Injections getInjections() {
         if (Strings.isNullOrEmpty(name)) {
-            return cdiModule
+            return injections
                     .bind(this.mqSender, MessageQueueSender.class);
         } else {
-            return cdiModule
+            return injections
                     .bindNamed(this.mqSender, MessageQueueSender.class, name);
         }
     }

@@ -7,8 +7,6 @@ import jante.model.ServiceDefinition;
 import jante.util.JsonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import jante.model.ServiceDefinition;
-import jante.util.JsonUtil;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -30,36 +28,26 @@ public class JerseyConfig {
         resourceConfig.register(provider);
     }
 
-    public JerseyConfig(ServiceDefinition serviceDefinition, ImmutableList<CdiModule> cdiModules) {
+    public JerseyConfig(ServiceDefinition serviceDefinition, ImmutableList<Injections> injectionsList) {
         resourceConfig.property("jersey.config.server.wadl.disableWadl", "true");
         registerServiceDefintion(serviceDefinition);
 
-        cdiModules.forEach(cdi ->
-                cdi.registrators.forEach(registrator -> registrator.applyRegistations(resourceConfig))
+        injectionsList.forEach(inject ->
+                inject.registrators.forEach(registrator -> registrator.applyRegistations(resourceConfig))
         );
 
-        resourceConfig.register(new InjectionBinder(cdiModules));
-    }
-
-
-    public interface Binder {
-        void addBindings(AbstractBinder binder);
-    }
-
-
-    public interface Registrator {
-        void applyRegistations(ResourceConfig resourceConfig);
+        resourceConfig.register(new InjectionBinder(injectionsList));
     }
 
 
     @AllArgsConstructor
     class InjectionBinder extends AbstractBinder {
-        final ImmutableList<CdiModule> cdiModules;
+        final ImmutableList<Injections> injections;
 
         @Override
         protected void configure() {
-            cdiModules.forEach(cdi ->
-                    cdi.binders.forEach(binder -> binder.addBindings(this))
+            injections.forEach(injection ->
+                    injection.binders.forEach(binder -> binder.addBindings(this))
             );
         }
     }

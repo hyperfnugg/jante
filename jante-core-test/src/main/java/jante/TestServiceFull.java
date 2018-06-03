@@ -6,8 +6,6 @@ import jante.model.ServiceDefinition;
 import jante.model.Version;
 import lombok.*;
 import jante.TestService.Payload;
-import jante.model.ServiceDefinition;
-import jante.model.Version;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -21,7 +19,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 
 public class TestServiceFull implements ServiceDefinition {
@@ -161,7 +159,7 @@ public class TestServiceFull implements ServiceDefinition {
 
     public final static TestServiceFull testServiceFull = new TestServiceFull();
     public final static ServiceConfig config = serviceConfig(testServiceFull)
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(ImplFull.class, ResourceFull.class)
             );
 }

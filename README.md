@@ -1,32 +1,29 @@
 # Jante
+#####Problem:
+General purpose frameworks are optimized for certain conventions. Sometimes the needs of a team diverge significantly
+from said conventions.
+In these cases, using a general purpose framework requires writing custom configuration and code.
+Such customization requires familiarity
+with the framework, and often must compromises between solving the problem and accomodating the framework.
 
-In OBOS we decided to write our own microservice-chassis instead of using spring/j2ee/dropwizard. The reasoning was that
-a microservice-chassis is just a bundling of microframeworks, a problem that is not to hard if you choose the right
-microframeworks. We have found that this approach provides several advantages:
- * Fine grained control to tailor integration of microframeworks to our organizational-specific needs 
- * High degree of standardization in services
- * Room for innovation in code infrastructure
- 
-The code is tailored specific for our needs, it is dependent on our libraries and must be tailored to your needs.
-  We wanted to share this code as an example/template of writing your own microservice-chassis.
-  
+#####Proposition
+Consider having each team write and maintain their own microservice chassis. There are several advantages:
+* The common code implements exactly the behavior you need and nothing more - which means the minimum
+behavior to understand and maintain
+* The common code can assume defaults tailored to you, thus reducing the interface of the common code. With a minimum
+interface, you might be able to update the common code without disturbing the business logic
+* You can easily adapt to common behavior not covered by general purpose frameworks.
+* Writing a microservice chassis is often about configuring and integrating many libraries. If you choose
+the right libraries, the configuration and intergration does not require a lot of code.
+* Having highly standardized applications makes it easier to integrate applications
+
+
+
+##The code
+The attached library is an example of a microservice chassis written from scratch. You are free to fork it as a starting
+point for your own code.
+
 To install with archetype (Does not seem to work to well with ideas integrated maven):
 ```
 mvn clean install -Darchetype
 ```
-
-## Version 4
-###### Breaking changes
-* UserTokenFilterAddon.postVerificationCallback() has been removed. Bind a class to UserTokenAuthenticatedHandler instead.
-
-## Version 6
-###### Breaking changes
-* Updated dependencies to be compatible with Bean Validation 2.0 (JSR 380) Reference Implementation.
-* Updated to Mockito version 2.
-
-## Version 7
-###### Breaking changes
-* Updated ActiveMqListenerAddon to require MessageHandler.
-###### New features
-* Added annotation for fine grained application token id handling on resource and specific endpoints.
-* Added elasticsearch client addon

@@ -13,7 +13,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import java.net.URI;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.TestService.testService;
 import static jante.TestServiceRunner.testServiceRunner;
@@ -33,7 +33,7 @@ public class JerseyClientAddonErrorHandlingTest {
                     .addon(exceptionMapperAddon
                             .stacktraceConfig(RuntimeException.class, false)
                     )
-                    .cdi(props -> cdiModule
+                    .inject(props -> injections
                             .bind(resource, Resource.class)
                     )
     );

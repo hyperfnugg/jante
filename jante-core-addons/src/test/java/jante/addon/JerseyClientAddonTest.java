@@ -13,7 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.time.LocalDate;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.ServiceDefinitionUtil.stubServiceDefinition;
 import static jante.TestService.Payload;
@@ -48,14 +48,14 @@ public class JerseyClientAddonTest {
 
     TestServiceRunner nestedRunner = testServiceRunner(
             serviceConfig(testService)
-                    .cdi(props -> cdiModule
+                    .inject(props -> injections
                             .bind(nestedResourceMock, Resource.class)
                     )
     );
 
     ServiceConfig outerServiceConfig = serviceConfig(stubServiceDefinition("outer", OuterResource.class))
             .addon(exceptionMapperAddon)
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(OuterResourceImpl.class, OuterResource.class)
             );
 

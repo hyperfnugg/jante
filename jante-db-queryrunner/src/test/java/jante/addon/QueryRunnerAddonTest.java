@@ -1,10 +1,9 @@
 package jante.addon;
 
-import jante.CdiModule;
+import jante.Injections;
 import jante.ServiceConfig;
 import jante.ServiceDefinitionUtil;
 import jante.TestServiceRunner;
-import jante.ServiceConfig;
 import jante.queryrunner.QueryRunnerAdapter;
 import org.apache.commons.dbutils.QueryRunner;
 import org.junit.Test;
@@ -16,12 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
 
-import static jante.CdiModule.cdiModule;
-import static jante.ServiceConfig.serviceConfig;
 import static jante.ServiceDefinitionUtil.stubServiceDefinition;
-import static jante.TestServiceRunner.testServiceRunner;
-import static jante.addon.ExceptionMapperAddon.exceptionMapperAddon;
-import static jante.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
 import static jante.addon.QueryRunnerAddon.queryRunnerAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,7 +34,7 @@ public class QueryRunnerAddonTest {
     @Test
     public void runsWithQueryRunner() {
         ServiceConfig serviceConfig = this.serviceConfig
-                .cdi(props -> CdiModule.cdiModule
+                .inject(props -> Injections.injections
                         .bind(ApiImpl.class, Api.class)
                 );
         Integer actual = TestServiceRunner.testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);
@@ -50,7 +44,7 @@ public class QueryRunnerAddonTest {
     @Test
     public void runsWithQueryRunnerAdapter() {
         ServiceConfig serviceConfig = this.serviceConfig
-                .cdi(props -> CdiModule.cdiModule
+                .inject(props -> Injections.injections
                         .bind(ApiImplAdapter.class, Api.class)
                 );
         Integer actual = TestServiceRunner.testServiceRunner(serviceConfig).oneShot(Api.class, Api::get);

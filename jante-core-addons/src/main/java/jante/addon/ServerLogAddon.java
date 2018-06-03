@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.CdiModule;
+import jante.Injections;
 import jante.log.ServerLogFilter;
 import jante.log.ServerLogger;
 import jante.log.model.LogParams;
@@ -13,7 +13,7 @@ import jante.model.Addon;
 import javax.ws.rs.container.ContainerRequestContext;
 import java.util.function.Predicate;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServerLogAddon implements Addon {
@@ -34,9 +34,9 @@ public class ServerLogAddon implements Addon {
 
 
     @Override
-    public CdiModule getCdiModule() {
+    public Injections getInjections() {
         ServerLogger serverLogger = new ServerLogger(fastTrackFilters, logParams);
-        return cdiModule
+        return injections
                 .bind(serverLogger, ServerLogger.class)
                 .register(ServerLogFilter.class);
     }

@@ -9,10 +9,6 @@ import jante.util.GuavaHelper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.model.Addon;
-import jante.model.PropertyProvider;
-import jante.model.ServiceDefinition;
-import jante.util.GuavaHelper;
 
 import java.util.List;
 import java.util.Set;
@@ -21,7 +17,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceConfig {
@@ -30,16 +26,16 @@ public class ServiceConfig {
     @Wither(AccessLevel.PACKAGE)
     private final ImmutableList<Addon> addons;
     @Wither(AccessLevel.PACKAGE)
-    private final ImmutableList<Function<PropertyProvider, CdiModule>> cdiModuleConfigs;
+    private final ImmutableList<Function<PropertyProvider, Injections>> injectionConfigs;
 
 
     public static ServiceConfig serviceConfig(ServiceDefinition serviceDefinition) {
-        return new ServiceConfig(serviceDefinition, ImmutableList.of(), ImmutableList.of(props -> cdiModule.bind(props, PropertyProvider.class)));
+        return new ServiceConfig(serviceDefinition, ImmutableList.of(), ImmutableList.of(props -> injections.bind(props, PropertyProvider.class)));
     }
 
 
     Runtime applyProperties(PropertyProvider properties) {
-        ImmutableList<CdiModule> cdiModules = cdiModuleConfigs.stream()
+        ImmutableList<Injections> injections = injectionConfigs.stream()
                 .map(f -> f.apply(properties))
                 .collect(GuavaHelper.listCollector());
 
@@ -51,18 +47,18 @@ public class ServiceConfig {
         ImmutableList<Addon> initializedAddons = ImmutableList.of();
 
         for (Addon addon : unFinalizedAddons) {
-            Addon initializedAddon = addon.initialize(new Runtime(serviceDefinition, initializedAddons, cdiModules));
+            Addon initializedAddon = addon.initialize(new Runtime(serviceDefinition, initializedAddons, injections));
             initializedAddons = GuavaHelper.plus(initializedAddons, initializedAddon);
         }
 
-        List<CdiModule> modules = initializedAddons.stream()
-                .map(Addon::getCdiModule)
+        List<Injections> modules = initializedAddons.stream()
+                .map(Addon::getInjections)
                 .collect(toList());
 
         return new Runtime(serviceDefinition, initializedAddons,
-                ImmutableList.<CdiModule>builder()
+                ImmutableList.<Injections>builder()
                         .addAll(modules)
-                        .addAll(cdiModules)
+                        .addAll(injections)
                         .build()
         );
     }
@@ -105,31 +101,31 @@ public class ServiceConfig {
         );
     }
 
-    public ServiceConfig cdi(Function<PropertyProvider, CdiModule> cdiModule) {
-        return withCdiModuleConfigs(GuavaHelper.plus(this.cdiModuleConfigs, cdiModule));
+    public ServiceConfig inject(Function<PropertyProvider, Injections> injectionConfig) {
+        return withInjectionConfigs(GuavaHelper.plus(this.injectionConfigs, injectionConfig));
     }
 
     public static class Runtime {
         public final ServiceDefinition serviceDefinition;
         public final AddonRepo addons;
-        public final ImmutableList<CdiModule> cdiModules;
+        public final ImmutableList<Injections> injections;
 
-        public Runtime(ServiceDefinition serviceDefinition, Iterable<Addon> addons, ImmutableList<CdiModule> cdiModules) {
+        public Runtime(ServiceDefinition serviceDefinition, Iterable<Addon> addons, ImmutableList<Injections> injections) {
             this.serviceDefinition = serviceDefinition;
             this.addons = new AddonRepo(ImmutableList.copyOf(addons));
-            this.cdiModules = cdiModules;
+            this.injections = injections;
         }
 
 
-        public List<JerseyConfig.Registrator> getRegistrators() {
-            return cdiModules.stream()
+        public List<Injections.Registrator> getRegistrators() {
+            return injections.stream()
                     .map(it -> it.registrators.stream())
                     .flatMap(Function.identity())
                     .collect(toList());
         }
 
-        public Iterable<JerseyConfig.Binder> getBindings() {
-            return cdiModules.stream()
+        public Iterable<Injections.Binder> getBindings() {
+            return injections.stream()
                     .map(it -> it.binders.stream())
                     .flatMap(Function.identity())
                     .collect(toList());

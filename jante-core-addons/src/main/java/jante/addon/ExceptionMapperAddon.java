@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.CdiModule;
+import jante.Injections;
 import jante.exception.*;
 import jante.model.Addon;
 import jante.util.GuavaHelper;
@@ -31,8 +31,8 @@ public class ExceptionMapperAddon implements Addon {
 
 
     @Override
-    public CdiModule getCdiModule() {
-        return CdiModule.cdiModule
+    public Injections getInjections() {
+        return Injections.injections
                 .register(JsonProcessingExceptionMapper.class)
                 .register(RuntimeExceptionMapper.class)
                 .register(ValidationExceptionMapper.class)

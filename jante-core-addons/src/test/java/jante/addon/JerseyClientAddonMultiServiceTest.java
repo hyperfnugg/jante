@@ -13,7 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.WebTarget;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.ServiceDefinitionUtil.stubServiceDefinition;
 import static jante.TestServiceRunner.testServiceRunner;
@@ -67,21 +67,21 @@ public class JerseyClientAddonMultiServiceTest {
     TestServiceRunner nestedRunner1 = testServiceRunner(
             serviceConfig(stubServiceDefinition(NESTED_NAME1, Nested1.class))
                     .addon(exceptionMapperAddon)
-                    .cdi(props -> cdiModule
+                    .inject(props -> injections
                             .bind(nestedMock1, Nested1.class)
                     )
     );
     TestServiceRunner nestedRunner2 = testServiceRunner(
             serviceConfig(stubServiceDefinition(NESTED_NAME2, Nested2.class))
                     .addon(exceptionMapperAddon)
-                    .cdi(props -> cdiModule
+                    .inject(props -> injections
                             .bind(nestedMock2, Nested2.class)
                     )
     );
 
     ServiceConfig outerConfig = serviceConfig(stubServiceDefinition("outer", Outer.class))
             .addon(exceptionMapperAddon)
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(OuterImpl.class, Outer.class)
             );
 

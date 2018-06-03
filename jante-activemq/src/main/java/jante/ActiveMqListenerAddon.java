@@ -9,9 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import jante.model.Addon;
 import jante.model.PropertyProvider;
-import jante.mq.ActiveMqListener;
-import jante.mq.MessageHandler;
-import jante.mq.MessageQueueListener;
 import jante.util.ObosHealthCheckRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -20,7 +17,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 
 /**
  * Initializes a MessageQueueListener and routes the messages to a specified handler class.
@@ -80,8 +77,8 @@ public class ActiveMqListenerAddon implements Addon {
     }
 
     @Override
-    public CdiModule getCdiModule() {
-        CdiModule ret = cdiModule
+    public Injections getInjections() {
+        Injections ret = injections
                 .register(StartListenersFeature.class);
 
         if (Strings.isNullOrEmpty(name)) {

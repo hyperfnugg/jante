@@ -1,7 +1,7 @@
 package jante.addon;
 
 import com.google.common.base.Strings;
-import jante.CdiModule;
+import jante.Injections;
 import jante.JettyServer;
 import jante.ServiceConfig;
 import jante.model.Addon;
@@ -11,17 +11,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import jante.CdiModule;
-import jante.JettyServer;
-import jante.ServiceConfig;
-import jante.model.Addon;
-import jante.model.PropertyProvider;
-import jante.util.ObosHealthCheckRegistry;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
-
-import static jante.CdiModule.cdiModule;
 
 /**
  * Knytter opp en datakilde og binder BasicDatasource og QueryRunner til hk2.
@@ -84,12 +76,12 @@ public class BasicDatasourceAddon implements DataSourceAddon {
 
 
     @Override
-    public CdiModule getCdiModule() {
+    public Injections getInjections() {
         if (!Strings.isNullOrEmpty(name)) {
-            return CdiModule.cdiModule
+            return Injections.injections
                     .bindNamed(dataSource, DataSource.class, name);
         } else {
-            return CdiModule.cdiModule
+            return Injections.injections
                     .bind(dataSource, DataSource.class);
         }
     }

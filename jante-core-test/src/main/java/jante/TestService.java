@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import jante.model.ServiceDefinition;
-import jante.model.Version;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
 import java.util.List;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 
 public class TestService implements ServiceDefinition {
@@ -70,7 +68,7 @@ public class TestService implements ServiceDefinition {
 
     public final static TestService testService = new TestService();
     public final static ServiceConfig config = serviceConfig(testService)
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(TestService.Impl.class, TestService.Resource.class)
             );
 }

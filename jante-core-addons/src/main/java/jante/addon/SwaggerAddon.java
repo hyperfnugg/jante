@@ -10,7 +10,7 @@ import io.swagger.jaxrs.listing.SwaggerSerializers;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.CdiModule;
+import jante.Injections;
 import jante.JettyServer;
 import jante.ServiceConfig;
 import jante.model.Addon;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static io.swagger.jaxrs.config.SwaggerContextService.CONFIG_ID_DEFAULT;
 import static io.swagger.jaxrs.config.SwaggerContextService.SCANNER_ID_DEFAULT;
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.JettyServer.CONFIG_KEY_API_PATHSPEC;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -63,7 +63,7 @@ public class SwaggerAddon implements Addon {
 
 
     @Override
-    public CdiModule getCdiModule() {
+    public Injections getInjections() {
         Scanner scanner = new Scanner() {
             @Override
             public Set<Class<?>> classes() {
@@ -90,7 +90,7 @@ public class SwaggerAddon implements Addon {
         beanConfig.setScan(true);
 
 
-        return cdiModule
+        return injections
                 .register(ApiListingResource.class)
                 .register(SwaggerSerializers.class)
                 ;

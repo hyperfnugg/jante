@@ -17,13 +17,14 @@ To generate project from archetype:
 mvn archetype:generate \
 -B \
 -DarchetypeGroupId=jante.template \
--DarchetypeArtifactId=jante-template-archetype \
+-DarchetypeArti
+factId=jante-template-archetype \
 -DarchetypeVersion=0.1.0-SNAPSHOT \
 -Dversion=1.0-SNAPSHOT \
--DCapitalizedResource=Person \
--DlowerCaseResource=person \
--DgroupId=jante \
--DartifactId=person
+-DCapitalizedResource=Bar \
+-DlowerCaseResource=bar \
+-DgroupId=bar \
+-DartifactId=bar
 ```
 
 

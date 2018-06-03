@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.CdiModule;
+import jante.Injections;
 import jante.JettyServer;
 import jante.ServiceConfig;
 import jante.es.Indexer;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.es.ElasticsearchUtil.getClusterName;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -58,8 +58,8 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
     }
 
     @Override
-    public CdiModule getCdiModule() {
-        return cdiModule
+    public Injections getInjections() {
+        return injections
                 .bindNamed(this, ElasticsearchIndexAddon.class, indexname)
                 .bind(SearcherIndexNameResolver.class, JustInTimeInjectionResolver.class)
                 ;

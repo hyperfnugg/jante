@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Random;
 
 import static java.util.Collections.singletonList;
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.TestServiceRunner.testServiceRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -36,7 +36,7 @@ public class TemplateResourceUnitTest {
         Template expected = Template.ofDto(expectedDto);
         TemplateController controller = Mockito.mock(TemplateController.class);
         TestServiceRunner runner = testServiceRunner(config
-                .cdi(props -> cdiModule
+                .inject(props -> injections
                         .bind(controller, TemplateController.class)
                 )
         );

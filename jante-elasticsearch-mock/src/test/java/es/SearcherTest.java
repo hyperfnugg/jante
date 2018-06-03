@@ -25,7 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.ServiceDefinitionUtil.stubServiceDefinition;
 import static jante.TestServiceRunner.testServiceRunner;
@@ -72,7 +72,7 @@ public class SearcherTest {
                         .addon(elasticsearchMockAddon)
                         .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class))
                         .addon(elasticsearchIndexAddon("anotherIndex", String.class))
-                        .cdi(props -> cdiModule
+                        .inject(props -> injections
                                 .bind(ResourceImpl.class, Resource.class)
                         );
         runner = testServiceRunner(serviceConfig);

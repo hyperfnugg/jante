@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import jante.CdiModule;
+import jante.Injections;
 import jante.ServiceConfig;
 import jante.exception.DependenceException;
 import jante.model.Addon;
@@ -17,7 +17,7 @@ import org.skife.jdbi.v2.DBI;
 import javax.sql.DataSource;
 import java.util.Set;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JdbiAddon implements NamedAddon {
@@ -49,8 +49,8 @@ public class JdbiAddon implements NamedAddon {
     }
 
     @Override
-    public CdiModule getCdiModule() {
-        CdiModule ret = cdiModule;
+    public Injections getInjections() {
+        Injections ret = injections;
 
         if (name != null) {
             ret = ret

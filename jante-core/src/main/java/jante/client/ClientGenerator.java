@@ -3,16 +3,13 @@ package jante.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.base.Strings;
+import jante.Injections;
 import jante.model.SerializationSpec;
 import jante.model.ServiceDefinition;
 import jante.model.Version;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import jante.JerseyConfig;
-import jante.model.SerializationSpec;
-import jante.model.ServiceDefinition;
-import jante.model.Version;
 import jante.util.JsonUtil;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
@@ -43,7 +40,7 @@ public class ClientGenerator {
         ClientConfig clientConfig = clientConfigBase != null
                 ? new ClientConfig().loadFrom(clientConfigBase)
                 : new ClientConfig();
-        final List<JerseyConfig.Binder> binders = new ArrayList<>();
+        final List<Injections.Binder> binders = new ArrayList<>();
         binders.add(binder -> binder.bind(targetName).to(String.class).named(TARGET_NAME_INJECTION));
         binders.add(binder -> binder.bind(targetVersion).to(Version.class));
 

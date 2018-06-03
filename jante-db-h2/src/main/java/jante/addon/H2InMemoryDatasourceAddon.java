@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import jante.CdiModule;
+import jante.Injections;
 import jante.ServiceConfig;
 import jante.model.Addon;
 import jante.util.GuavaHelper;
@@ -17,7 +17,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 
 /**
  * Knytter opp en datakilde og binder BasicDatasource og QueryRunner til hk2.
@@ -63,12 +63,12 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
     }
 
     @Override
-    public CdiModule getCdiModule() {
+    public Injections getInjections() {
         if (!isNullOrEmpty(name)) {
-            return cdiModule
+            return injections
                     .bindNamed(dataSource, DataSource.class, name);
         } else {
-            return cdiModule
+            return injections
                     .bind(dataSource, DataSource.class);
         }
     }

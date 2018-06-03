@@ -17,7 +17,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.TestService.testService;
 import static jante.TestServiceRunner.testServiceRunner;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class ExceptionMapperAddonTest {
     TestService.Resource resource = mock(TestService.Resource.class);
     ServiceConfig config = serviceConfig(testService)
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(resource, TestService.Resource.class)
             )
             .addon(exceptionMapperAddon.stacktraceConfig(RuntimeException.class, false));

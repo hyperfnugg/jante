@@ -6,7 +6,7 @@ import jante.TestServiceFull.ResourceFull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.TestServiceRunner.testServiceRunner;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -14,8 +14,8 @@ import static org.mockito.Mockito.verify;
 public class TestServiceRunnerStubTest {
     private Controller controller = Mockito.mock(Controller.class);
     private TestServiceRunner runner = testServiceRunner(
-            TestServiceFull.config.cdi(props ->
-                    cdiModule.bind(controller, Controller.class)
+            TestServiceFull.config.inject(props ->
+                    injections.bind(controller, Controller.class)
             )
     );
 

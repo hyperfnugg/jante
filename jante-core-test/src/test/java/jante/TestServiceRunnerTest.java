@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import javax.ws.rs.client.ClientBuilder;
 import java.time.LocalDate;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.TestService.testService;
 import static jante.TestServiceRunner.testServiceRunner;
@@ -19,7 +19,7 @@ public class TestServiceRunnerTest {
     private Resource impl = Mockito.mock(Resource.class);
     private TestServiceRunner runner = testServiceRunner(
             serviceConfig(testService)
-                    .cdi(props -> cdiModule.bind(impl, Resource.class))
+                    .inject(props -> injections.bind(impl, Resource.class))
     );
 
     @Test

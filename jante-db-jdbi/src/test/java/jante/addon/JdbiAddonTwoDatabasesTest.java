@@ -15,11 +15,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-import static jante.CdiModule.cdiModule;
+import static jante.Injections.injections;
 import static jante.ServiceConfig.serviceConfig;
 import static jante.ServiceDefinitionUtil.stubServiceDefinition;
-import static jante.TestServiceRunner.testServiceRunner;
-import static jante.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static jante.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
 import static jante.addon.JdbiAddon.jdbiAddon;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +41,7 @@ public class JdbiAddonTwoDatabasesTest {
                     .insert("mongoable", "'bil'", "'Per'")
             )
             .addon(jdbiAddon.dao(JdbiDto2.class).name(addon_name2))
-            .cdi(props -> cdiModule
+            .inject(props -> injections
                     .bind(ApiImpl.class, Api.class)
                     .bind(ApiImpl2.class, Api2.class)
             );
