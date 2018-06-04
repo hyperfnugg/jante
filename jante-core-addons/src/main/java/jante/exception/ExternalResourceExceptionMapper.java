@@ -42,7 +42,7 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
             detail = "Kan ikke nå " + meta.targetName;
         }
         final String referenceId = (meta.httpResponseMetaData != null
-                && Strings.isNullOrEmpty(meta.httpResponseMetaData.incidentReferenceId))
+                && ! Strings.isNullOrEmpty(meta.httpResponseMetaData.incidentReferenceId))
                 ? meta.httpResponseMetaData.incidentReferenceId
                 : null;
         List<String> metaLines = FormatUtil.indentLines(metaDataToLogLines(meta), INDENTATION);
