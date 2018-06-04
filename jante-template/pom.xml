@@ -24,11 +24,6 @@
                 <artifactId>jante-template-server</artifactId>
                 <version>${jante.version}</version>
             </dependency>
-            <dependency>
-                <groupId>jante.template</groupId>
-                <artifactId>jante-template-mock</artifactId>
-                <version>${jante.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -87,7 +82,6 @@
     <modules>
         <module>jante-template-api</module>
         <module>jante-template-server</module>
-        <module>jante-template-mock</module>
     </modules>
 
 </project>

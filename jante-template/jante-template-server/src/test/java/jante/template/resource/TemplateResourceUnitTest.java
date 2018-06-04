@@ -7,12 +7,13 @@ import jante.addon.DataSourceAddon;
 import jante.template.Main;
 import jante.template.controllers.TemplateController;
 import jante.template.dto.TemplateDto;
-import jante.template.dto.TemplateDtoTypes;
+import jante.template.dto.TemplateNestedDto;
 import jante.template.model.Template;
 import jante.template.resources.TemplateResource;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
@@ -32,7 +33,14 @@ public class TemplateResourceUnitTest {
     @Test
     public void insert() {
         //Given
-        TemplateDto expectedDto = TemplateDtoTypes.early(new Random(400));
+        TemplateDto expectedDto = TemplateDto.builder()
+                .name("foo")
+                .startDate(LocalDate.MIN)
+                .nested(TemplateNestedDto.builder()
+                        .value(1.0)
+                        .build()
+                )
+                .build();
         Template expected = Template.ofDto(expectedDto);
         TemplateController controller = Mockito.mock(TemplateController.class);
         TestServiceRunner runner = testServiceRunner(config

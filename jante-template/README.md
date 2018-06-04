@@ -17,8 +17,7 @@ To generate project from archetype:
 mvn archetype:generate \
 -B \
 -DarchetypeGroupId=jante.template \
--DarchetypeArti
-factId=jante-template-archetype \
+-DarchetypeArtifactId=jante-template-archetype \
 -DarchetypeVersion=0.1.0-SNAPSHOT \
 -Dversion=1.0-SNAPSHOT \
 -DCapitalizedResource=Bar \

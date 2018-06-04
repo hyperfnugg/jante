@@ -28,11 +28,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>jante.template</groupId>
-            <artifactId>jante-template-mock</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>jante</groupId>
             <artifactId>jante-db-jdbi</artifactId>
         </dependency>

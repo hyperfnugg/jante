@@ -8,12 +8,12 @@ import jante.template.Main;
 import jante.template.db.dao.TemplateDao;
 import jante.template.db.model.TemplateDb;
 import jante.template.dto.TemplateDto;
-import jante.template.dto.TemplateDtoTypes;
+import jante.template.dto.TemplateNestedDto;
 import jante.template.model.Template;
 import jante.template.resources.TemplateResource;
 import org.junit.Test;
 
-import java.util.Random;
+import java.time.LocalDate;
 
 import static jante.TestServiceRunner.testServiceRunner;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +28,14 @@ public class TemplateCrudJdbiIntegrationTest {
 
     final TestServiceRunner runner = testServiceRunner(config);
 
-    static final TemplateDto original = TemplateDtoTypes.late(new Random(350));
+    static final TemplateDto original = TemplateDto.builder()
+            .name("foobar")
+            .startDate(LocalDate.MIN)
+            .nested(TemplateNestedDto.builder()
+                    .value(1.0)
+                    .build()
+            )
+            .build();
 
     @Test
     public void create() {
